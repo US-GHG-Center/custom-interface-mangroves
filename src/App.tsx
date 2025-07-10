@@ -6,6 +6,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { EmitInterface } from './pages/emitInterface';
 
 import './App.css';
+import { MangrooveInterface } from './lib';
 
 const BASE_PATH = process.env.PUBLIC_URL;
 const defaultCollectionId = 'emit-ch4plume-v1';
@@ -22,7 +23,7 @@ function App() {
             <Route
               path='/'
               element={
-                <EmitInterface
+                <MangrooveInterface
                   defaultCollectionId={defaultCollectionId}
                   defaultZoomLocation={defaultZoomLocation}
                   defaultZoomLevel={defaultZoomLevel}

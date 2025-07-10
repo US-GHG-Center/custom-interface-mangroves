@@ -1,5 +1,5 @@
-export { EmitInterface } from '../pages/emitInterface';
+export { MangrooveInterface } from '../pages/mangrooveInterface';
 export type {
-  EmitInterfaceProps,
-  EmitInterfaceConfig,
-} from '../pages/emitInterface/types';
+  MangrooveInterfacePropss,
+  MangrooveInterfaceConfig ,
+} from '../pages/mangrooveInterface/types';

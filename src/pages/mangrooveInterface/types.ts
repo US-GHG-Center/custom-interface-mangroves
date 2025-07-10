@@ -1,4 +1,4 @@
-export interface EmitInterfaceConfig {
+export interface MangrooveInterfaceConfig {
   baseStacApiUrl: string;
   metadataEndpoint: string;
   stacApiUrl: string;
@@ -11,8 +11,8 @@ export interface EmitInterfaceConfig {
   latlonEndpoint: string;
 }
 
-export interface EmitInterfaceProps {
-  config?: Partial<EmitInterfaceConfig>;
+export interface MangrooveInterfacePropss {
+  config?: Partial<MangrooveInterfaceConfig>;
   defaultCollectionId: string;
   defaultZoomLocation: string;
   defaultZoomLevel: string;
