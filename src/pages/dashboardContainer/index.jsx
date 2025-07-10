@@ -55,13 +55,14 @@ export const DashboardContainer = ({
 
     const init = async () => {
       try {
-        const collectionUrl = `${config.baseStacApiUrl}/collections/${collectionId}`;
+        const collectionUrl = `${config.stacApiUrl}/collections/${collectionId}`;
         const collectionMetadata = await fetchCollectionMetadata(collectionUrl);
 
         if (!isMounted) return;
         setCollectionMeta(collectionMetadata);
         const metadata = await fetchData(config.metadataEndpoint);
-        const stacData = await fetchAllFromSTACAPI(config.stacApiUrl);
+        const stacUrl = `${config.stacApiUrl}/collections/${collectionId}/items`
+        const stacData = await fetchAllFromSTACAPI(stacUrl);
         if (!isMounted) return;
         const { data, latestPlume } = await transformMetadata(
           metadata,

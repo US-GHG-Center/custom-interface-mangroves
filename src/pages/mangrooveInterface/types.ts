@@ -1,5 +1,4 @@
 export interface MangrooveInterfaceConfig {
-  baseStacApiUrl: string;
   metadataEndpoint: string;
   stacApiUrl: string;
   coverageUrl: string;

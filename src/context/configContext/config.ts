@@ -1,17 +1,16 @@
-import { EmitInterfaceConfig } from '../../pages/emitInterface/types';
+import { MangrooveInterfaceConfig } from '../../pages/mangrooveInterface/types';
 
 /**
  * Default configuration for the EMIT Interface
  * These values will be used if no user configuration is provided
  */
-const defaultConfig: EmitInterfaceConfig = {
+const defaultConfig: MangrooveInterfaceConfig = {
   mapboxToken: process.env.REACT_APP_MAPBOX_TOKEN || '',
   mapboxStyle: process.env.REACT_APP_MAPBOX_STYLE_URL || '',
   basemapStyle: process.env.REACT_APP_BASEMAP_STYLES_MAPBOX_ID || '',
   stacApiUrl: process.env.REACT_APP_STAC_API_URL || '',
   metadataEndpoint: process.env.REACT_APP_METADATA_ENDPOINT || '',
   coverageUrl: process.env.REACT_APP_COVERAGE_URL || '',
-  baseStacApiUrl: process.env.REACT_APP_BASE_STAC_API_URL || '',
   geoApifyKey: process.env.REACT_APP_GEOAPIFY_APIKEY || '',
   latlonEndpoint: process.env.REACT_APP_LAT_LON_TO_COUNTRY_ENDPOINT || '',
   rasterApiUrl: process.env.REACT_APP_RASTER_API_URL || '',
@@ -19,12 +18,12 @@ const defaultConfig: EmitInterfaceConfig = {
 
 /**
  * Merges user configuration with default configuration
- * @param {Partial<EmitInterfaceConfig>} userConfig - User provided configuration
- * @returns {EmitInterfaceConfig} Merged configuration
+ * @param {Partial<MangrooveInterfaceConfig>} userConfig - User provided configuration
+ * @returns {MangrooveInterfaceConfig} Merged configuration
  */
 export const getConfig = (
-  userConfig: Partial<EmitInterfaceConfig> = {}
-): EmitInterfaceConfig => {
+  userConfig: Partial<MangrooveInterfaceConfig> = {}
+): MangrooveInterfaceConfig => {
   return {
     ...defaultConfig,
     ...userConfig,
@@ -38,17 +37,16 @@ interface ValidationResult {
 
 /**
  * Validates the configuration
- * @param {EmitInterfaceConfig} config - Configuration to validate
+ * @param {MangrooveInterfaceConfig} config - Configuration to validate
  * @returns {ValidationResult} Validation result with missing fields if any
  */
 export const validateConfig = (
-  config: EmitInterfaceConfig
+  config: MangrooveInterfaceConfig
 ): ValidationResult => {
-  const requiredFields: (keyof EmitInterfaceConfig)[] = [
+  const requiredFields: (keyof MangrooveInterfaceConfig)[] = [
     'stacApiUrl',
     'metadataEndpoint',
     'coverageUrl',
-    'baseStacApiUrl',
     'mapboxToken',
     'mapboxStyle',
     'geoApifyKey',
