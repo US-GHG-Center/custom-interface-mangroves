@@ -9,10 +9,7 @@ const defaultConfig: MangrooveInterfaceConfig = {
   mapboxStyle: process.env.REACT_APP_MAPBOX_STYLE_URL || '',
   basemapStyle: process.env.REACT_APP_BASEMAP_STYLES_MAPBOX_ID || '',
   stacApiUrl: process.env.REACT_APP_STAC_API_URL || '',
-  metadataEndpoint: process.env.REACT_APP_METADATA_ENDPOINT || '',
-  coverageUrl: process.env.REACT_APP_COVERAGE_URL || '',
-  geoApifyKey: process.env.REACT_APP_GEOAPIFY_APIKEY || '',
-  latlonEndpoint: process.env.REACT_APP_LAT_LON_TO_COUNTRY_ENDPOINT || '',
+  stacSearchApi: `${process.env.REACT_APP_STAC_API_URL}/search` || '',
   rasterApiUrl: process.env.REACT_APP_RASTER_API_URL || '',
 };
 
@@ -45,11 +42,9 @@ export const validateConfig = (
 ): ValidationResult => {
   const requiredFields: (keyof MangrooveInterfaceConfig)[] = [
     'stacApiUrl',
-    'metadataEndpoint',
-    'coverageUrl',
+    'stacSearchApi',
     'mapboxToken',
     'mapboxStyle',
-    'geoApifyKey',
   ];
 
   const missingFields = requiredFields.filter(

@@ -1,16 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Dashboard } from '../dashboard/index.jsx';
-import {
-  fetchCollectionMetadata,
-  fetchAllFromSTACAPI,
-  fetchData,
-  getCoverageData,
-} from '../../services/api.js';
-import {
-  transformMetadata,
-  createIndexedCoverageData,
-} from '../../utils/dataTransform.ts';
+import { processSTACItems } from '../../services/api.js'
+import { CACHE_TTL, getCache, setCache } from '../../components/map/utils/index.js'
 
 import { useConfig } from '../../context/configContext/index.jsx';
 
@@ -48,70 +40,33 @@ export const DashboardContainer = ({
   const [loadingData, setLoadingData] = useState(true);
   const [filterDateRange, setFilterDateRange] = useState({});
 
+
+
   // Fetch collection metadata and plumes data
   useEffect(() => {
-    let isMounted = true;
-    setLoadingData(true);
 
+    setLoadingData(true);
     const init = async () => {
       try {
-        const collectionUrl = `${config.stacApiUrl}/collections/${collectionId}`;
-        const collectionMetadata = await fetchCollectionMetadata(collectionUrl);
-
-        if (!isMounted) return;
-        setCollectionMeta(collectionMetadata);
-        const metadata = await fetchData(config.metadataEndpoint);
-        const stacUrl = `${config.stacApiUrl}/collections/${collectionId}/items`
-        const stacData = await fetchAllFromSTACAPI(stacUrl);
-        if (!isMounted) return;
-        const { data, latestPlume } = await transformMetadata(
-          metadata,
-          stacData,
-          config
-        );
-        setPlumes(data);
-        setFilterDateRange({
-          startDate: defaultStartDate,
-          endDate: latestPlume?.properties?.datetime,
-        });
+        const stacKey = `stacData-${collectionId}`;
+        let data = getCache(stacKey);
+        if (!data || !data.length) {
+          data = await processSTACItems(config, collectionId);
+          setCache(stacKey, data, CACHE_TTL);
+        }
+        setPlumes(data)
         setLoadingData(false);
       } catch (error) {
         console.error('Error fetching data:', error);
-        if (isMounted) {
-          setLoadingData(false);
-        }
       }
     };
 
     init();
 
-    return () => {
-      isMounted = false;
-    };
+
   }, [collectionId, defaultZoomLocation, defaultZoomLevel, defaultStartDate]);
 
-  // Fetch coverage data
-  useEffect(() => {
-    let isMounted = true;
-    const fetchCoverage = async () => {
-      try {
-        const coverageData = await getCoverageData(config.coverageUrl);
-        if (!isMounted) return;
 
-        const indexedCoverageData = createIndexedCoverageData(coverageData);
-        if (coverageData?.features?.length > 0) {
-          setCoverage(indexedCoverageData);
-        }
-      } catch (error) {
-        console.error('Error fetching coverage data:', error);
-      }
-    };
-
-    fetchCoverage();
-    return () => {
-      isMounted = false;
-    };
-  }, [config.coverageUrl]);
 
   return (
     <Dashboard

@@ -3,13 +3,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { EmitInterface } from './pages/emitInterface';
+import { MangrooveInterface } from './pages/mangrooveInterface';
 
 import './App.css';
-import { MangrooveInterface } from './lib';
 
 const BASE_PATH = process.env.PUBLIC_URL;
-const defaultCollectionId = 'emit-ch4plume-v1';
+const defaultCollectionId = 'cms-mangrove-biomass-height-v5';
 const defaultZoomLocation = [-98.771556, 32.967243];
 const defaultZoomLevel = 4;
 const defaultStartDate = '2022-08-22';

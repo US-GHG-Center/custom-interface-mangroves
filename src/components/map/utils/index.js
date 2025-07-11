@@ -256,3 +256,28 @@ export function isFeatureWithinBounds(feature, bounds) {
   // Check if the feature intersects with the bounding box
   return booleanIntersects(feature, boundingBox);
 }
+
+
+
+export const CACHE_TTL = 1000 * 60 * 60; // 1 hour
+export function setCache(key, data, ttlMs) {
+  const expires = Date.now() + ttlMs;
+  localStorage.setItem(key, JSON.stringify({ data, expires }));
+}
+
+export function getCache(key) {
+  const cached = localStorage.getItem(key);
+  if (!cached) return null;
+  try {
+    const { data, expires } = JSON.parse(cached);
+    if (Date.now() > expires) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return data;
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
+}
+
