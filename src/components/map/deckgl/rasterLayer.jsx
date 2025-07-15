@@ -9,10 +9,11 @@ import { useDeckGL } from '../../../context/mapContext';
 
 
 export function RasterLayer({ config, collectionId, selectedAsset }) {
+ 
   const { deckOverlay } = useDeckGL();
   const COLLECTION_NAME = collectionId
   const RASTER_ENDPOINT = config.rasterApiUrl
-  async function fetchTileUrl() {
+  async function fetchTileUrl(selectedAsset) {
     try {
       // 1. Register search (cache by collection)
       const registerKey = `raster-register-${COLLECTION_NAME}`;
@@ -65,7 +66,7 @@ export function RasterLayer({ config, collectionId, selectedAsset }) {
     }
 
     async function init() {
-      const tileUrl = await fetchTileUrl();
+      const tileUrl = await fetchTileUrl(selectedAsset);
       const tileLayer = new TileLayer({
         id: 'mangrove-cog-dynamic',
         data: tileUrl,
@@ -99,7 +100,7 @@ export function RasterLayer({ config, collectionId, selectedAsset }) {
       }
     }
     init()
-  }, [deckOverlay])
+  }, [deckOverlay, selectedAsset])
   return null
 }
 

@@ -41,7 +41,6 @@ export const DashboardContainer = ({
   const [filterDateRange, setFilterDateRange] = useState({});
 
 
-
   // Fetch collection metadata and plumes data
   useEffect(() => {
 

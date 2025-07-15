@@ -23,7 +23,6 @@ import './index.css';
  * @returns {JSX.Element}
  */
 export const ColorBar = ({ label, VMIN, VMAX, colormap, BAR_WIDTH = 450 }) => {
-
   const colorBarContainer = useRef();
   const { tooltip, handleMouseMove, hideTooltip } = useTooltipPosition();
 
@@ -75,14 +74,7 @@ export const ColorBar = ({ label, VMIN, VMAX, colormap, BAR_WIDTH = 450 }) => {
         <span>{VMAX}</span>
       </div>
 
-      <Typography
-        variant='subtitle2'
-        gutterBottom
-        sx={{ marginTop: 0, marginBottom: 0 }}
-        className='colorbar-label'
-      >
-        {label}
-      </Typography>
+      <p id='unit-label'>{label}</p>
       {/* </Card> */}
     </>
   );

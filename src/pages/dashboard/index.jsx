@@ -8,6 +8,7 @@ import {
   Title,
   MapControls,
   MapZoom,
+  SwitchLayer,
 } from '../../components';
 
 import styled from 'styled-components';
@@ -56,11 +57,43 @@ export function Dashboard({
   collectionId,
   loadingData,
 }) {
+
   // states for components/controls
   const [openDrawer, setOpenDrawer] = useState(false);
-
   const { config } = useConfig();
-  const selectedAsset = 'mangrove-agb';
+  const layers = [
+    {
+      id: 'mangrove-agb',
+      name: 'Aboveground Biomass',
+      description:
+        ' Aboveground biomass (AGB): Estimated mass of living plant material above the soil, measured in megagrams per hectare (Mg/ha).',
+      VMIN: 0,
+      VMAX: 63,
+      colormap: 'viridis',
+      unit: ' Aboveground Biomass (Mg/ha)',
+    },
+    {
+      id: 'mangrove-hba',
+      name: 'Height-based Area',
+      description:
+        'Height-based area (HBA): Area-weighted mean height of mangrove canopy, measured in meters (m).',
+      VMIN: 0,
+      VMAX: 100,
+      colormap: 'viridis',
+      unit: 'Height-based Area (m)',
+    },
+    {
+      id: 'mangrove-hmax95',
+      name: 'Basal max height',
+      description:
+        '95th percentile maximum height (Hmax95): The height below which 95% of mangrove canopy heights fall, measured in meters (m).',
+      VMIN: 0,
+      VMAX: 200,
+      colormap: 'viridis',
+      unit: '95th Percentile Max Height (m)',
+    },
+  ];
+  const [selectedAssetLayer, setSelectedAssetLayer] = useState(layers[0]);
 
   const handleResetHome = () => {
     setFromSearch(false);
@@ -69,9 +102,11 @@ export function Dashboard({
     setZoomLevel(4);
     setZoomLocation([-98.771556, 32.967243]);
   };
+
   const handleHideLayers = () => {
-    console.log("Hide all the layers")
-  }
+    console.log('Hide all the layers');
+  };
+ 
 
   return (
     <div className='fullSize'>
@@ -81,6 +116,15 @@ export function Dashboard({
             <Title title={TITLE} description={DESCRIPTION} />
             <div className='title-content'>
               <HorizontalLayout>
+                {layers.length ? (
+                  <SwitchLayer
+                    layers={layers}
+                    setSelectedAssetLayer={setSelectedAssetLayer}
+                    selectedAssetLayer={selectedAssetLayer}
+                  />
+                ) : (
+                  <></>
+                )}
               </HorizontalLayout>
             </div>
           </Paper>
@@ -94,7 +138,7 @@ export function Dashboard({
           <RasterLayer
             collectionId={collectionId}
             config={config}
-            selectedAsset={selectedAsset}
+            selectedAsset={selectedAssetLayer?.id}
           />
         </MainMap>
       </div>
