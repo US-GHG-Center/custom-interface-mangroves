@@ -18,7 +18,7 @@ import './index.css';
 import { useConfig } from '../../context/configContext';
 import { RasterLayer } from '../../components/map/deckgl/rasterLayer';
 
-const TITLE = 'Mangrooves';
+const TITLE = 'Mangroves';
 const DESCRIPTION =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed\
  do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
@@ -33,7 +33,6 @@ const HorizontalLayout = styled.div`
 /**
  * Dashboard Component
  *
- * This is the main container for the EMIT Methane Plume Viewer.
  * It integrates map rendering, plume data visualization, filtering, and UI controls.
  *
  * @component
