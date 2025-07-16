@@ -17,6 +17,8 @@ import './index.css';
 
 import { useConfig } from '../../context/configContext';
 import { RasterLayer } from '../../components/map/deckgl/rasterLayer';
+import { MarkerComponent } from '../../components/map/deckgl/markerComponents';
+import { DeckLayers } from '../../components/map/deckgl/deckLayerManager';
 
 const TITLE = 'Mangroves';
 const DESCRIPTION =
@@ -48,15 +50,14 @@ const HorizontalLayout = styled.div`
  * @param {boolean} props.loadingData - Whether the dashboard is still loading its data.
  */
 export function Dashboard({
+  stacData,
   zoomLocation,
-
   setZoomLocation,
   zoomLevel,
   setZoomLevel,
   collectionId,
   loadingData,
 }) {
-
   // states for components/controls
   const [openDrawer, setOpenDrawer] = useState(false);
   const { config } = useConfig();
@@ -77,7 +78,7 @@ export function Dashboard({
       description:
         'Height-based area (HBA): Area-weighted mean height of mangrove canopy, measured in meters (m).',
       VMIN: 0,
-      VMAX: 100,
+      VMAX: 63,
       colormap: 'viridis',
       unit: 'Height-based Area (m)',
     },
@@ -87,7 +88,7 @@ export function Dashboard({
       description:
         '95th percentile maximum height (Hmax95): The height below which 95% of mangrove canopy heights fall, measured in meters (m).',
       VMIN: 0,
-      VMAX: 200,
+      VMAX: 63,
       colormap: 'viridis',
       unit: '95th Percentile Max Height (m)',
     },
@@ -105,7 +106,6 @@ export function Dashboard({
   const handleHideLayers = () => {
     console.log('Hide all the layers');
   };
- 
 
   return (
     <div className='fullSize'>
@@ -128,16 +128,19 @@ export function Dashboard({
             </div>
           </Paper>
           <MapZoom zoomLocation={zoomLocation} zoomLevel={zoomLevel} />
+          <DeckLayers
+            collectionId={collectionId}
+            stacData={stacData}
+            selectedAsset={selectedAssetLayer?.id}
+            setZoomLocation={setZoomLocation}
+            setZoomLevel={setZoomLevel}
+            zoomLevel={zoomLevel}
+          />
           <MapControls
             openDrawer={openDrawer}
             setOpenDrawer={setOpenDrawer}
             handleResetHome={handleResetHome}
             handleHideLayers={handleHideLayers}
-          />
-          <RasterLayer
-            collectionId={collectionId}
-            config={config}
-            selectedAsset={selectedAssetLayer?.id}
           />
         </MainMap>
       </div>

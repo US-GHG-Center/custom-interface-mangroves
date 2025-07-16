@@ -27,18 +27,15 @@ export const DashboardContainer = ({
 }) => {
   const { config } = useConfig();
   const [searchParams] = useSearchParams();
-  const [coverage, setCoverage] = useState();
   const [zoomLocation, setZoomLocation] = useState(
     searchParams.get('zoom-location') || defaultZoomLocation
   );
   const [zoomLevel, setZoomLevel] = useState(
-
     searchParams.get('zoom-level') || defaultZoomLevel
   );
-  const [collectionMeta, setCollectionMeta] = useState({});
-  const [plumes, setPlumes] = useState([]);
+  const [stacData, setStacData] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [filterDateRange, setFilterDateRange] = useState({});
+
 
 
   // Fetch collection metadata and plumes data
@@ -53,7 +50,7 @@ export const DashboardContainer = ({
           data = await processSTACItems(config, collectionId);
           setCache(stacKey, data, CACHE_TTL);
         }
-        setPlumes(data)
+        setStacData(data)
         setLoadingData(false);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -69,14 +66,11 @@ export const DashboardContainer = ({
 
   return (
     <Dashboard
-      plumes={plumes}
-      coverage={coverage}
+      stacData={stacData}
       zoomLocation={zoomLocation}
       zoomLevel={zoomLevel}
       setZoomLocation={setZoomLocation}
       setZoomLevel={setZoomLevel}
-      collectionMeta={collectionMeta}
-      filterDateRange={filterDateRange}
       collectionId={collectionId}
       loadingData={loadingData}
     />

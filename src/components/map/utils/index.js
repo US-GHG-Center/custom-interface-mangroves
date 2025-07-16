@@ -257,12 +257,14 @@ export function isFeatureWithinBounds(feature, bounds) {
   return booleanIntersects(feature, boundingBox);
 }
 
-
-
 export const CACHE_TTL = 1000 * 60 * 60; // 1 hour
 export function setCache(key, data, ttlMs) {
   const expires = Date.now() + ttlMs;
   localStorage.setItem(key, JSON.stringify({ data, expires }));
+}
+
+export function clearCache(key) {
+  localStorage.removeItem(key);
 }
 
 export function getCache(key) {
@@ -280,4 +282,3 @@ export function getCache(key) {
     return null;
   }
 }
-
