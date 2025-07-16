@@ -57,7 +57,6 @@ jobs:
           [ -z "${{ vars.REACT_APP_COVERAGE_URL }}" ] && missing_vars+=("vars.REACT_APP_COVERAGE_URL")
           [ -z "${{ vars.DEPLOYMENT_BUCKET }}" ] && missing_vars+=("vars.DEPLOYMENT_BUCKET")
           [ -z "${{ vars.DEPLOYMENT_REGION }}" ] && missing_vars+=("vars.DEPLOYMENT_REGION")
-          [ -z "${{ secrets.REACT_APP_BASEMAP_STYLES_MAPBOX_ID }}" ] && missing_vars+=("secrets.REACT_APP_BASEMAP_STYLES_MAPBOX_ID")
           [ -z "${{ secrets.REACT_APP_GEOAPIFY_APIKEY }}" ] && missing_vars+=("secrets.REACT_APP_GEOAPIFY_APIKEY")
           [ -z "${{ secrets.REACT_APP_MAPBOX_TOKEN }}" ] && missing_vars+=("secrets.REACT_APP_MAPBOX_TOKEN")
           [ -z "${{ secrets.DEPLOYMENT_ROLE_ARN }}" ] && missing_vars+=("secrets.DEPLOYMENT_ROLE_ARN")
@@ -74,7 +73,6 @@ jobs:
         working-directory: ./
         env:
           REACT_APP_MAPBOX_TOKEN: ${{ secrets.REACT_APP_MAPBOX_TOKEN }}
-          REACT_APP_BASEMAP_STYLES_MAPBOX_ID: ${{ secrets.REACT_APP_BASEMAP_STYLES_MAPBOX_ID }}
           REACT_APP_GEOAPIFY_APIKEY: ${{secrets.REACT_APP_GEOAPIFY_APIKEY}}
           PUBLIC_URL: ${{ vars.PUBLIC_URL }}
           REACT_APP_STAC_API_URL: ${{ vars.REACT_APP_STAC_API_URL }}
