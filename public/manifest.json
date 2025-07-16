@@ -1,6 +1,6 @@
 {
-  "short_name": "EMIT Methane Plume Viewer",
-  "name": "Interactive Emission Plumes for EMIT",
+  "short_name": "Mangroves",
+  "name": "Interactive visualization of Mangroves Biomass",
   "icons": [
     {
       "src": "favicon.ico",
