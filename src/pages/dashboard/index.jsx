@@ -16,8 +16,6 @@ import styled from 'styled-components';
 import './index.css';
 
 import { useConfig } from '../../context/configContext';
-import { RasterLayer } from '../../components/map/deckgl/rasterLayer';
-import { MarkerComponent } from '../../components/map/deckgl/markerComponents';
 import { DeckLayers } from '../../components/map/deckgl/deckLayerManager';
 
 const TITLE = 'Mangroves';
@@ -106,6 +104,7 @@ export function Dashboard({
   const handleHideLayers = () => {
     console.log('Hide all the layers');
   };
+
 
   return (
     <div className='fullSize'>

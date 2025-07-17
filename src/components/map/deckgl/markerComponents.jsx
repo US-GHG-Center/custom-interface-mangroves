@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { IconLayer } from '@deck.gl/layers';
-import { ZOOM_THRESHOLD } from '../utils/constants';
-import { zoom } from 'chartjs-plugin-zoom';
+
 
 /**
  * MarkerComponent: Adds mangrove markers to the map.
@@ -54,14 +53,23 @@ function filterByBboxArea(data, threshold, op = 'lt') {
   });
 }
 
-export function useMarkerLayer({ stacData, handleClickOnMarker }) {
-  const markers = useMemo(() => {
-    if (!stacData) return null;
+export function useMarkerLayer({
+  stacData,
+  handleClickOnMarker,
+  showMarkers,
+}) {
+  const markerLayer = useMemo(() => {
+    if (!stacData) {
+      return null;
+    }
+
     const filtered = filterByBboxArea(stacData, BBOX_AREA_THRESHOLD);
+
     return new IconLayer({
       id: 'mangrove-markers',
       data: filtered,
       pickable: true,
+      visible: showMarkers,
       iconAtlas:
         'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
       iconMapping: ICON_MAPPING,
@@ -72,12 +80,12 @@ export function useMarkerLayer({ stacData, handleClickOnMarker }) {
       getColor: [34, 139, 34, 255],
       getAnchor: () => 'bottom',
       onClick: (info) => {
-        if (info.object && info.object.bbox) {
+
+        if (handleClickOnMarker && info.object?.bbox) {
           handleClickOnMarker(info.object.bbox);
         }
       },
     });
-  }, [stacData]);
-
-  return { markerLayer: markers };
+  }, [stacData, showMarkers, handleClickOnMarker]);
+  return { markerLayer };
 }

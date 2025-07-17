@@ -3,6 +3,8 @@ import { useDeckRasterLayer } from './rasterLayer';
 import { useDeckGL, useMapbox } from '../../../context/mapContext';
 import { useMarkerLayer } from './markerComponents';
 
+
+const ZOOM_LEVEL_MARGIN = 5
 export function DeckLayers({
   collectionId,
   stacData,
@@ -11,6 +13,33 @@ export function DeckLayers({
   setZoomLevel,
 }) {
   const { deckOverlay } = useDeckGL();
+  const { map } = useMapbox();
+  const [showMarkers, setShowMarkers] = useState(true)
+
+
+  useEffect(() => {
+    if (!map) return;
+    const handleViewportChange = () => {
+      const zoom = map.getZoom();
+
+      if (zoom >= ZOOM_LEVEL_MARGIN) {
+        setShowMarkers(false)
+      } else {
+        setShowMarkers(true)
+      }
+    };
+
+    map.on('zoomend', handleViewportChange);
+    map.on('dragend', handleViewportChange);
+    // map.on('moveend', handleViewportChange);
+
+    return () => {
+
+      map.off('zoomend', handleViewportChange);
+      map.off('dragend', handleViewportChange);
+      // map.on('moveend', handleViewportChange);
+    };
+  }, [map]);
 
   const flyToBbox = (bbox) => {
     if (!deckOverlay || !map) return;
@@ -28,12 +57,16 @@ export function DeckLayers({
   const { markerLayer } = useMarkerLayer({
     stacData,
     handleClickOnMarker,
+    showMarkers
   });
 
   useEffect(() => {
-    const layers = [rasterLayer, markerLayer];
-    deckOverlay.setProps({ layers: layers });
-  }, [rasterLayer, deckOverlay]);
+   
+    if (markerLayer) {
+      const layers = [rasterLayer, markerLayer];
+      deckOverlay.setProps({ layers: layers });
+    }
+  }, [deckOverlay, markerLayer, rasterLayer]);
 
-  return null;
+  return <></>;
 }
