@@ -11,7 +11,7 @@ const BASE_PATH = process.env.PUBLIC_URL;
 const defaultCollectionId = 'cms-mangrove-biomass-height-v5';
 const defaultZoomLocation = [-98.771556, 32.967243];
 const defaultZoomLevel = 4;
-const defaultStartDate = '2022-08-22';
+
 function App() {
   return (
     <Fragment>
@@ -26,7 +26,6 @@ function App() {
                   defaultCollectionId={defaultCollectionId}
                   defaultZoomLocation={defaultZoomLocation}
                   defaultZoomLevel={defaultZoomLevel}
-                  defaultStartDate={defaultStartDate}
                 />
               }
             />

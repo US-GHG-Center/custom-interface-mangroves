@@ -10,8 +10,11 @@ const RASTER_LAYER_ID = 'mangrove-cog-dynamic';
 
 async function fetchTileUrl(selectedAsset, COLLECTION_NAME, RASTER_ENDPOINT) {
   try {
-    // 1. Register search (cache by collection)
     const registerKey = `raster-register-${COLLECTION_NAME}`;
+    const assetId = selectedAsset?.id
+    const colormap = selectedAsset?.colormap
+    const VMAX = selectedAsset?.rescale[1]
+    const VMIN = selectedAsset?.rescale[0]
     let registerData = getCache(registerKey);
     if (!registerData) {
       const registerResp = await fetch(`${RASTER_ENDPOINT}/searches/register`, {
@@ -36,7 +39,8 @@ async function fetchTileUrl(selectedAsset, COLLECTION_NAME, RASTER_ENDPOINT) {
     // 3. Replace {tileMatrixSetId} with WebMercatorQuad and use selectedAsset
     const tilejsonUrl =
       tilejsonLink.href.replace('{tileMatrixSetId}', 'WebMercatorQuad') +
-      `?assets=${selectedAsset}&colormap_name=greens&rescale=1%2C45&nodata=0&tile_scale=2`;
+      `?assets=${assetId}&colormap_name=${colormap}&rescale=${VMIN},${VMAX}&nodata=0&tile_scale=2`;
+
     // 4. Fetch tilejson (cache by tilejsonUrl)
     let tilejsonData = getCache(tilejsonUrl);
     if (!tilejsonData) {
@@ -59,63 +63,65 @@ export function useDeckRasterLayer({ collectionId, selectedAsset }) {
   const COLLECTION_NAME = collectionId;
   const RASTER_ENDPOINT = config.rasterApiUrl;
   const [rasterLayer, setRasterLayer] = useState(null);
-
   useEffect(() => {
     window.Tile3DLayer = Tile3DLayer;
     window.GeoJsonLayer = GeoJsonLayer;
     window.ArcLayer = ArcLayer;
   }, []);
   useEffect(() => {
-    if (!selectedAsset || !collectionId) {
+    if (!selectedAsset?.id || !collectionId) {
       setRasterLayer(null); // Clear the layer if no asset is selected
       return;
     }
     async function init() {
       try {
-        const tileUrl = await fetchTileUrl(
-          selectedAsset,
-          COLLECTION_NAME,
-          RASTER_ENDPOINT
-        );
+        let tileUrl = null
+        if (selectedAsset?.id && collectionId && selectedAsset?.rescale?.length) {
+          tileUrl = await fetchTileUrl(
+            selectedAsset,
+            COLLECTION_NAME,
+            RASTER_ENDPOINT
+          );
 
-        if (tileUrl) {
-          const tileLayer = new TileLayer({
-            id: RASTER_LAYER_ID,
-            data: tileUrl,
-            minZoom: ZOOM_THRESHOLD - 1,
-            maxZoom: 18,
-            tileSize: 256,
-            opacity: 1,
-            pickable: false,
-            maxRequests: 8,
-            onTileError: (error) => {
-              console.log('Error occurred', error);
-            },
-            renderSubLayers: (props) => {
-              try {
-                const {
-                  _bbox: { west, south, east, north },
-                } = props.tile;
+          if (tileUrl) {
+            const tileLayer = new TileLayer({
+              id: RASTER_LAYER_ID,
+              data: tileUrl,
+              minZoom: ZOOM_THRESHOLD - 1,
+              maxZoom: 18,
+              tileSize: 256,
+              opacity: 1,
+              pickable: false,
+              maxRequests: 8,
+              onTileError: (error) => {
+                console.log('Error occurred', error);
+              },
+              renderSubLayers: (props) => {
+                try {
+                  const {
+                    _bbox: { west, south, east, north },
+                  } = props.tile;
 
-                return new BitmapLayer(props, {
-                  data: null,
-                  image: props.data,
-                  bounds: [west, south, east, north],
-                  colorDomain: [0, 255],
-                  colorRange: [
-                    [0, 0, 0, 0],
-                    [34, 139, 34, 200],
-                    [0, 100, 0, 255],
-                  ],
-                });
-              } catch (err) {
-                console.log('Error while adding bitmap layer', err);
-              }
-            },
-          });
-          setRasterLayer(tileLayer);
-        } else {
-          setRasterLayer(null);
+                  return new BitmapLayer(props, {
+                    data: null,
+                    image: props.data,
+                    bounds: [west, south, east, north],
+                    colorDomain: [0, 255],
+                    colorRange: [
+                      [0, 0, 0, 0],
+                      [34, 139, 34, 200],
+                      [0, 100, 0, 255],
+                    ],
+                  });
+                } catch (err) {
+                  console.log('Error while adding bitmap layer', err);
+                }
+              },
+            });
+            setRasterLayer(tileLayer);
+          } else {
+            setRasterLayer(null);
+          }
         }
       } catch (error) {
         console.log('Error while adding layer', error);

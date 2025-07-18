@@ -7,7 +7,6 @@ export function MangrooveInterface({
   defaultCollectionId,
   defaultZoomLocation,
   defaultZoomLevel,
-  defaultStartDate,
 }) {
   return (
     <ConfigProvider userConfig={config}>
@@ -15,7 +14,6 @@ export function MangrooveInterface({
         collectionId={defaultCollectionId}
         defaultZoomLocation={defaultZoomLocation}
         defaultZoomLevel={defaultZoomLevel}
-        defaultStartDate={defaultStartDate}
       />
     </ConfigProvider>
   );

@@ -38,8 +38,8 @@ export function SwitchLayer({
               <div className='layer-legend'>
                 <ColorBar
                   label={layer.unit}
-                  VMAX={layer.VMAX}
-                  VMIN={layer.VMIN}
+                  VMAX={layer.rescale[1]}
+                  VMIN={layer.rescale[0]}
                   colormap={layer.colormap}
                   BAR_WIDTH={BAR_WIDTH}
                 />

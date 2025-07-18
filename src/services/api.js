@@ -1,4 +1,4 @@
-const RESPONSE_LIMIT = 10000;
+import { RESPONSE_LIMIT } from '../utils/constants.ts';
 
 const calculateWeight = (bbox) => {
   const width = bbox[2] - bbox[0];
@@ -46,6 +46,23 @@ export const processSTACItems = async (config, collectionId) => {
     });
   } catch (error) {
     console.error('Error fetching STAC data:', error);
+    return [];
+  }
+};
+
+export const getCollectionInfo = async (config, collectionId) => {
+  try {
+    const url = `${config.stacApiUrl}/collections/${collectionId}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching STAC collection info', error);
     return [];
   }
 };

@@ -61,7 +61,7 @@ export function DeckLayers({
   });
 
   useEffect(() => {
-   
+
     if (markerLayer) {
       const layers = [rasterLayer, markerLayer];
       deckOverlay.setProps({ layers: layers });

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Dashboard } from '../dashboard/index.jsx';
-import { processSTACItems } from '../../services/api.js'
+import { processSTACItems, getCollectionInfo } from '../../services/api.js'
 import { CACHE_TTL, getCache, setCache } from '../../components/map/utils/index.js'
 
 import { useConfig } from '../../context/configContext/index.jsx';
@@ -9,7 +9,7 @@ import { useConfig } from '../../context/configContext/index.jsx';
 /**
  * DashboardContainer Component
  *
- * A reusable component that provides the EMIT Methane Plume Viewer interface.
+ * A reusable component that provides the Global Mangrove  interface.
  * This component handles data fetching, state management, and rendering of the dashboard.
  *
  * @component
@@ -23,7 +23,6 @@ export const DashboardContainer = ({
   collectionId,
   defaultZoomLocation,
   defaultZoomLevel,
-  defaultStartDate,
 }) => {
   const { config } = useConfig();
   const [searchParams] = useSearchParams();
@@ -35,12 +34,11 @@ export const DashboardContainer = ({
   );
   const [stacData, setStacData] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
-
+  const [collectionInfo, setCollectionInfo] = useState(null)
 
 
   // Fetch collection metadata and plumes data
   useEffect(() => {
-
     setLoadingData(true);
     const init = async () => {
       try {
@@ -50,6 +48,13 @@ export const DashboardContainer = ({
           data = await processSTACItems(config, collectionId);
           setCache(stacKey, data, CACHE_TTL);
         }
+        const collectonKey = `collectionInfo-${collectionId}`
+        let collectionInfo = getCache(collectonKey)
+        if (!collectionInfo || !collectionInfo?.id) {
+          collectionInfo = await getCollectionInfo(config, collectionId);
+          setCache(collectonKey, collectionInfo, CACHE_TTL);
+        }
+        setCollectionInfo(collectionInfo)
         setStacData(data)
         setLoadingData(false);
       } catch (error) {
@@ -58,9 +63,7 @@ export const DashboardContainer = ({
     };
 
     init();
-
-
-  }, [collectionId, defaultZoomLocation, defaultZoomLevel, defaultStartDate]);
+  }, [collectionId, defaultZoomLocation, defaultZoomLevel]);
 
 
 
@@ -73,6 +76,7 @@ export const DashboardContainer = ({
       setZoomLevel={setZoomLevel}
       collectionId={collectionId}
       loadingData={loadingData}
+      collectionInfo={collectionInfo}
     />
   );
 };
