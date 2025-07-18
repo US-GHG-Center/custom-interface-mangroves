@@ -18,10 +18,12 @@ import './index.css';
 import { useConfig } from '../../context/configContext';
 import { DeckLayers } from '../../components/map/deckgl/deckLayerManager';
 
-const TITLE = 'Mangroves';
+const TITLE = 'Global Mangroves';
 const DESCRIPTION =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed\
- do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+  'Mangrove wetlands are among the most productive ecosystems in the world, \
+   capturing and storing significant amounts of carbon dioxide (CO2) in the aboveground \
+   biomass and soil.Understanding their structural attributes is vital for determining regional\
+   and global carbon stock estimates and supporting coastal management.';
 const HorizontalLayout = styled.div`
   width: 90%;
   display: flex;
@@ -64,31 +66,28 @@ export function Dashboard({
       id: 'mangrove-agb',
       name: 'Aboveground Biomass',
       description:
-        ' Aboveground biomass (AGB): Estimated mass of living plant material above the soil, measured in megagrams per hectare (Mg/ha).',
-      VMIN: 0,
-      VMAX: 63,
-      colormap: 'viridis',
+        'Estimated mass of living plant material above the soil of global mangrove-forested wetlands, measured in megagrams per hectare (Mg/ha)',
+      colormap: 'magma_r',
+      rescale: renders && renders['mangrove-agb']?.rescale[0],
       unit: ' Aboveground Biomass (Mg/ha)',
     },
     {
       id: 'mangrove-hba',
-      name: 'Height-based Area',
+      name: 'Maximum Canopy Height',
       description:
-        'Height-based area (HBA): Area-weighted mean height of mangrove canopy, measured in meters (m).',
-      VMIN: 0,
-      VMAX: 63,
-      colormap: 'viridis',
-      unit: 'Height-based Area (m)',
+        'Estimated maximum canopy height (height of the tallest tree), measured in meters (m)',
+      rescale: renders && renders['mangrove-hba']?.rescale[0],
+      colormap: 'greens',
+      unit: 'Maximum Canopy Height (m)',
     },
     {
       id: 'mangrove-hmax95',
-      name: 'Basal max height',
+      name: 'Basal-Area Weighted Height',
       description:
-        '95th percentile maximum height (Hmax95): The height below which 95% of mangrove canopy heights fall, measured in meters (m).',
-      VMIN: 0,
-      VMAX: 63,
-      colormap: 'viridis',
-      unit: '95th Percentile Max Height (m)',
+        'Estimated tree heights weighted in proportion to their basal area, measured in meters (m)',
+      rescale: renders && renders['mangrove-hmax95']?.rescale[0],
+      colormap: 'greens',
+      unit: 'Basal-Area Weighted Height (m)',
     },
   ];
   const [selectedAssetLayer, setSelectedAssetLayer] = useState(layers[0]);
