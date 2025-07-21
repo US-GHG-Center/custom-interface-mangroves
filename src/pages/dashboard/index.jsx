@@ -103,7 +103,7 @@ export function Dashboard({
 
   //function to handle the reset home
   const handleResetHome = () => {
-    console.log("clicked")
+
     setZoomLevel(HOME_ZOOM_VALUE);
     setZoomLocation(HOME_ZOOM_LOCATION);
   };

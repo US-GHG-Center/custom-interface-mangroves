@@ -17,6 +17,12 @@ export function DeckLayers({
   const [showMarkers, setShowMarkers] = useState(true)
 
 
+
+  const handleZoomOutEvent = (zoom) => {
+    setZoomLevel(zoom);
+    setZoomLocation('');
+  };
+
   useEffect(() => {
     if (!map) return;
     const handleViewportChange = () => {
@@ -26,6 +32,7 @@ export function DeckLayers({
         setShowMarkers(false)
       } else {
         setShowMarkers(true)
+        handleZoomOutEvent(zoom);
       }
     };
 
