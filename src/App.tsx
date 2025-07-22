@@ -8,7 +8,7 @@ import { MangrooveInterface } from './pages/mangrooveInterface';
 import './App.css';
 
 const BASE_PATH = process.env.PUBLIC_URL;
-const defaultCollectionId = 'cms-mangrove-biomass-height-v5';
+const defaultCollectionId = 'cms-mangrove-agb-canopyheight-grid-v1.3';
 const defaultZoomLocation = [-98.771556, 32.967243];
 const defaultZoomLevel = 4;
 

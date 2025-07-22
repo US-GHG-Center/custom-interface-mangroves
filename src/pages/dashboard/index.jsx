@@ -61,32 +61,32 @@ export function Dashboard({
   useEffect(() => {
     if (collectionInfo?.id) {
       const renders = collectionInfo.renders
-      if (renders && renders['mangrove-agb']?.rescale[0]) {
+      if (renders && renders['agb']?.rescale[0]) {
         setLayers([
           {
-            id: 'mangrove-agb',
+            id: 'agb',
             name: 'Aboveground Biomass',
             description:
               'Estimated mass of living plant material above the soil of global mangrove-forested wetlands, measured in megagrams per hectare (Mg/ha)',
             colormap: 'magma_r',
-            rescale: renders && renders['mangrove-agb']?.rescale[0],
+            rescale: renders && renders['agb']?.rescale[0],
             unit: ' Aboveground Biomass (Mg/ha)',
           },
           {
-            id: 'mangrove-hba',
+            id: 'hba',
             name: 'Maximum Canopy Height',
             description:
               'Estimated maximum canopy height (height of the tallest tree), measured in meters (m)',
-            rescale: renders && renders['mangrove-hba']?.rescale[0],
+            rescale: renders && renders['hba']?.rescale[0],
             colormap: 'greens',
             unit: 'Maximum Canopy Height (m)',
           },
           {
-            id: 'mangrove-hmax95',
+            id: 'hmax95',
             name: 'Basal-Area Weighted Height',
             description:
               'Estimated tree heights weighted in proportion to their basal area, measured in meters (m)',
-            rescale: renders && renders['mangrove-hmax95']?.rescale[0],
+            rescale: renders && renders['hmax95']?.rescale[0],
             colormap: 'greens',
             unit: 'Basal-Area Weighted Height (m)',
           },
