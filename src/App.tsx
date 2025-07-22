@@ -6,11 +6,12 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { MangrooveInterface } from './pages/mangrooveInterface';
 
 import './App.css';
+import { HOME_ZOOM_LOCATION, HOME_ZOOM_VALUE } from './utils/constants';
 
 const BASE_PATH = process.env.PUBLIC_URL;
 const defaultCollectionId = 'cms-mangrove-agb-canopyheight-grid-v1.3';
-const defaultZoomLocation = [-98.771556, 32.967243];
-const defaultZoomLevel = 4;
+const defaultZoomLocation = HOME_ZOOM_LOCATION;
+const defaultZoomLevel = HOME_ZOOM_VALUE;
 
 function App() {
   return (
