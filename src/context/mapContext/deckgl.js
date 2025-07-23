@@ -31,7 +31,7 @@ export const DeckGLProvider = ({ children }) => {
       interleaved: true,
       layers: [],
       getCursor: () => {
-        return 'default';
+        return 'grab';
       },
     });
 

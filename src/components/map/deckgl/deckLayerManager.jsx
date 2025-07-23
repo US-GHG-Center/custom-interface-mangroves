@@ -62,13 +62,13 @@ export function DeckLayers({
     if (v) {
       deckOverlay.setProps({
         getCursor: () => {
-          return 'grab';
+          return 'default';
         }
       })
     } else {
       deckOverlay.setProps({
         getCursor: () => {
-          return 'default';
+          return 'grab';
         }
       })
     }
