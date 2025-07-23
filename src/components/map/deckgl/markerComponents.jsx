@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IconLayer } from '@deck.gl/layers';
-
+import { useMapbox } from '../../../context/mapContext';
 
 /**
  * MarkerComponent: Adds mangrove markers to the map.
@@ -57,6 +57,7 @@ export function useMarkerLayer({
   stacData,
   handleClickOnMarker,
   showMarkers,
+  handleOnHover,
 }) {
   const markerLayer = useMemo(() => {
     if (!stacData) {
@@ -69,6 +70,7 @@ export function useMarkerLayer({
       id: 'mangrove-markers',
       data: filtered,
       pickable: true,
+      onHover: (info) => handleOnHover && handleOnHover(!!info.object),
       visible: showMarkers,
       iconAtlas:
         'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
@@ -77,10 +79,10 @@ export function useMarkerLayer({
       sizeScale: 8,
       getPosition: (d) => d.position,
       getSize: 4,
+      alphaCutoff: 0,
       getColor: [34, 139, 34, 255],
       getAnchor: () => 'bottom',
       onClick: (info) => {
-
         if (handleClickOnMarker && info.object?.bbox) {
           handleClickOnMarker(info.object.bbox);
         }

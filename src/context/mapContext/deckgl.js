@@ -30,6 +30,9 @@ export const DeckGLProvider = ({ children }) => {
     deckOverlay.current = new MapboxOverlay({
       interleaved: true,
       layers: [],
+      getCursor: () => {
+        return 'default';
+      },
     });
 
     map.addControl(deckOverlay.current);

@@ -16,11 +16,9 @@ export function DeckLayers({
   const { map } = useMapbox();
   const [showMarkers, setShowMarkers] = useState(true)
 
-
-
   const handleZoomOutEvent = (zoom) => {
     setZoomLevel(zoom);
-    setZoomLocation('');
+    setZoomLocation([]);
   };
 
   useEffect(() => {
@@ -60,10 +58,28 @@ export function DeckLayers({
     flyToBbox(bbox);
   }, []);
 
+  const handleOnHoverOnMarkers = useCallback((v) => {
+    if (v) {
+      deckOverlay.setProps({
+        getCursor: () => {
+          return 'grab';
+        }
+      })
+    } else {
+      deckOverlay.setProps({
+        getCursor: () => {
+          return 'default';
+        }
+      })
+    }
+
+  }, [])
+
   const { rasterLayer } = useDeckRasterLayer({ collectionId, selectedAsset });
   const { markerLayer } = useMarkerLayer({
     stacData,
     handleClickOnMarker,
+    handleOnHover:handleOnHoverOnMarkers,
     showMarkers
   });
 
