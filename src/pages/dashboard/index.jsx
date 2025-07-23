@@ -16,8 +16,8 @@ import { HOME_ZOOM_LOCATION, HOME_ZOOM_VALUE } from '../../utils/constants';
 const TITLE = 'Global Mangroves';
 const DESCRIPTION =
   'Mangrove wetlands are among the most productive ecosystems in the world, \
-   capturing and storing significant amounts of carbon dioxide (CO2) in the aboveground \
-   biomass and soil.Understanding their structural attributes is vital for determining regional\
+   capturing and storing significant amounts of carbon dioxide (CO₂) in the aboveground \
+   biomass and soil. Understanding their structural attributes is vital for determining regional\
    and global carbon stock estimates and supporting coastal management.';
 const HorizontalLayout = styled.div`
   width: 90%;
