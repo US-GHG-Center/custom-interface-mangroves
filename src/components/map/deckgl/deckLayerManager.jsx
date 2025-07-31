@@ -2,9 +2,10 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { useDeckRasterLayer } from './rasterLayer';
 import { useDeckGL, useMapbox } from '../../../context/mapContext';
 import { useMarkerLayer } from './markerComponents';
+import { useAreaBasedCircle } from './areaBasedCircle';
 
 
-const ZOOM_LEVEL_MARGIN = 5
+const ZOOM_LEVEL_MARGIN = 4
 export function DeckLayers({
   collectionId,
   stacData,
@@ -15,6 +16,7 @@ export function DeckLayers({
   const { deckOverlay } = useDeckGL();
   const { map } = useMapbox();
   const [showMarkers, setShowMarkers] = useState(true)
+  const [showCircle, setShowCircle] = useState(true)
 
   const handleZoomOutEvent = (zoom) => {
     setZoomLevel(zoom);
@@ -25,11 +27,13 @@ export function DeckLayers({
     if (!map) return;
     const handleViewportChange = () => {
       const zoom = map.getZoom();
-
+      // console.log({ zoom })
       if (zoom >= ZOOM_LEVEL_MARGIN) {
-        setShowMarkers(false)
+
+        setShowCircle(false)
       } else {
-        setShowMarkers(true)
+
+        setShowCircle(true)
         handleZoomOutEvent(zoom);
       }
     };
@@ -54,11 +58,12 @@ export function DeckLayers({
     setZoomLevel(9);
   };
 
-  const handleClickOnMarker = useCallback((bbox) => {
+  const handleClickOnCircle = useCallback((bbox) => {
+    setShowCircle(false)
     flyToBbox(bbox);
   }, []);
 
-  const handleOnHoverOnMarkers = useCallback((v) => {
+  const handleOnHoverOnCircle = useCallback((v) => {
     if (v) {
       deckOverlay.setProps({
         getCursor: () => {
@@ -76,20 +81,20 @@ export function DeckLayers({
   }, [])
 
   const { rasterLayer } = useDeckRasterLayer({ collectionId, selectedAsset });
-  const { markerLayer } = useMarkerLayer({
+  const { circleLayer } = useAreaBasedCircle({
     stacData,
-    handleClickOnMarker,
-    handleOnHover:handleOnHoverOnMarkers,
-    showMarkers
+    handleClickOnMarker: handleClickOnCircle,
+    handleOnHover: handleOnHoverOnCircle,
+    showMarkers: showCircle,
+    setShowMarkers: setShowCircle
   });
 
   useEffect(() => {
-
-    if (markerLayer) {
-      const layers = [rasterLayer, markerLayer];
+    if (rasterLayer && circleLayer) {
+      const layers = [rasterLayer, circleLayer];
       deckOverlay.setProps({ layers: layers });
     }
-  }, [deckOverlay, markerLayer, rasterLayer]);
+  }, [deckOverlay, circleLayer, rasterLayer]);
 
   return <></>;
 }
