@@ -38,6 +38,7 @@ export const MapboxProvider = ({ children }) => {
       style,
       center: [-98.771556, 32.967243],
       zoom: 4,
+      minZoom:2,
       projection: 'mercator',
     });
 
