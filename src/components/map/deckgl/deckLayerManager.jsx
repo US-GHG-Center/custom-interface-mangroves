@@ -62,7 +62,7 @@ export function DeckLayers({
     if (v) {
       deckOverlay.setProps({
         getCursor: () => {
-          return 'default';
+          return 'pointer';
         }
       })
     } else {
