@@ -1,4 +1,4 @@
-export interface MangrooveInterfaceConfig {
+export interface MangrovesInterfaceConfig {
   stacApiUrl: string;
   stacSearchApi: string;
   mapboxToken: string;
@@ -7,8 +7,8 @@ export interface MangrooveInterfaceConfig {
   rasterApiUrl: string;
 }
 
-export interface MangrooveInterfacePropss {
-  config?: Partial<MangrooveInterfaceConfig>;
+export interface MangrovesInterfacePropss {
+  config?: Partial<MangrovesInterfaceConfig>;
   defaultCollectionId: string;
   defaultZoomLocation: string;
   defaultZoomLevel: string;

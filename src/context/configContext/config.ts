@@ -1,4 +1,4 @@
-import { MangrooveInterfaceConfig } from '../../pages/mangrooveInterface/types';
+import { MangrooveInterfaceConfig } from '../../pages/mangrovesInterface/types';
 
 /**
  * Default configuration for the EMIT Interface

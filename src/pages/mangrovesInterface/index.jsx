@@ -2,7 +2,7 @@ import React from 'react';
 import { DashboardContainer } from '../dashboardContainer';
 import { ConfigProvider } from '../../context/configContext';
 
-export function MangrooveInterface({
+export function MangrovesInterface({
   config = {},
   defaultCollectionId,
   defaultZoomLocation,

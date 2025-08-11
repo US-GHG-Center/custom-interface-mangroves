@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { MangrooveInterface } from './pages/mangrooveInterface';
+import { MangrovesInterface } from './pages/mangrovesInterface';
 
 import './App.css';
 import { HOME_ZOOM_LOCATION, HOME_ZOOM_VALUE } from './utils/constants';
@@ -23,7 +23,7 @@ function App() {
             <Route
               path='/'
               element={
-                <MangrooveInterface
+                <MangrovesInterface
                   defaultCollectionId={defaultCollectionId}
                   defaultZoomLocation={defaultZoomLocation}
                   defaultZoomLevel={defaultZoomLevel}

@@ -1,5 +1,5 @@
-export { MangrooveInterface } from '../pages/mangrooveInterface';
+export { MangrooveInterface } from '../pages/mangrovesInterface';
 export type {
   MangrooveInterfacePropss,
   MangrooveInterfaceConfig ,
-} from '../pages/mangrooveInterface/types';
+} from '../pages/mangrovesInterface/types';
