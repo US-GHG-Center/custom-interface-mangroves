@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useDeckRasterLayer } from './rasterLayer';
 import { useDeckGL, useMapbox } from '../../../context/mapContext';
-import { useMarkerLayer } from './markerComponents';
 import { useAreaBasedCircle } from './areaBasedCircle';
 
 
@@ -15,7 +14,6 @@ export function DeckLayers({
 }) {
   const { deckOverlay } = useDeckGL();
   const { map } = useMapbox();
-  const [showMarkers, setShowMarkers] = useState(true)
   const [showCircle, setShowCircle] = useState(true)
 
   const handleZoomOutEvent = (zoom) => {
@@ -83,9 +81,9 @@ export function DeckLayers({
   const { rasterLayer } = useDeckRasterLayer({ collectionId, selectedAsset });
   const { circleLayer } = useAreaBasedCircle({
     stacData,
-    handleClickOnMarker: handleClickOnCircle,
+    handleClickOnCircle,
     handleOnHover: handleOnHoverOnCircle,
-    showMarkers: showCircle,
+    showCircle,
     setShowMarkers: setShowCircle
   });
 
