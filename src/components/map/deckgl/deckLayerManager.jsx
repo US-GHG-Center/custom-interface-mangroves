@@ -25,12 +25,9 @@ export function DeckLayers({
     if (!map) return;
     const handleViewportChange = () => {
       const zoom = map.getZoom();
-      // console.log({ zoom })
       if (zoom >= ZOOM_LEVEL_MARGIN) {
-
         setShowCircle(false)
       } else {
-
         setShowCircle(true)
         handleZoomOutEvent(zoom);
       }
@@ -50,10 +47,12 @@ export function DeckLayers({
 
   const flyToBbox = (bbox) => {
     if (!deckOverlay || !map) return;
-    const zoomLat = (bbox[0] + bbox[2]) / 2;
-    const zoomLon = (bbox[1] + bbox[3]) / 2;
-    setZoomLocation([zoomLat, zoomLon]);
-    setZoomLevel(9);
+    const fitbox = [[bbox[0], bbox[1]], [bbox[2], bbox[3]]]
+    map.fitBounds(fitbox, {
+      offset: [60, 20],//offset in pixels to compensate for the dialog in the top left corner
+      padding: 20, // Add 20 pixels of padding around the bounding box
+      duration: 2000 // Animate the transition over 2 seconds
+    });
   };
 
   const handleClickOnCircle = useCallback((bbox) => {
