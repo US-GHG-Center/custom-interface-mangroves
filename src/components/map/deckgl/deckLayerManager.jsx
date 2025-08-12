@@ -25,13 +25,9 @@ export function DeckLayers({
     if (!map) return;
     const handleViewportChange = () => {
       const zoom = map.getZoom();
-      const bounds = map.getBounds()
-      console.log({ bounds })
       if (zoom >= ZOOM_LEVEL_MARGIN) {
-
         setShowCircle(false)
       } else {
-
         setShowCircle(true)
         handleZoomOutEvent(zoom);
       }
