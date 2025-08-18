@@ -87,7 +87,7 @@ jobs:
           path: ./build
 
   deploy:
-    name: Deploy EMIT to ${{needs.define-environment.outputs.env_name}} 🚀
+    name: Deploy Mangroves to ${{needs.define-environment.outputs.env_name}} 🚀
     needs:
       - build
       - define-environment
@@ -111,7 +111,7 @@ jobs:
       - name: ConfigureAWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{.EPLOYMENT_ROLE_ARN}}
+          role-to-assume: ${{DEPLOYMENT_ROLE_ARN}}
           role-session-name: ${{github.repository_owner}}
           aws-region: ${{ DEPLOYMENT_REGION }}
 
