@@ -54,7 +54,7 @@ export function useAreaBasedCircle({
       data: filteredData,
       pickable: true,
       visible: showCircle,
-      onHover: info => handleOnHover && handleOnHover(!!info.object),
+      onHover: info => handleOnHover && handleOnHover(info.object),
       onClick: info => {
         if (info.object?.bbox) {
           handleClickOnCircle && handleClickOnCircle(info.object.bbox);

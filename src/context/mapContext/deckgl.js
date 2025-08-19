@@ -33,6 +33,7 @@ export const DeckGLProvider = ({ children }) => {
       getCursor: () => {
         return 'grab';
       },
+      getTooltip: () => null,
     });
 
     map.addControl(deckOverlay.current);

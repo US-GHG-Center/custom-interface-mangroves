@@ -61,11 +61,16 @@ export function DeckLayers({
   }, []);
 
   const handleOnHoverOnCircle = useCallback((v) => {
-    if (v) {
+    if (v?.itemId) {
+      const idSplits = v?.itemId?.split('-')
+      const countryName = idSplits.pop()
       deckOverlay.setProps({
         getCursor: () => {
           return 'pointer';
         }
+      })
+      deckOverlay.setProps({
+        getTooltip: () => countryName
       })
     } else {
       deckOverlay.setProps({
