@@ -4,7 +4,7 @@ import { useDeckGL, useMapbox } from '../../../context/mapContext';
 import { useAreaBasedCircle } from './areaBasedCircle';
 
 
-const ZOOM_LEVEL_MARGIN = 4;
+const ZOOM_LEVEL_MARGIN = 5;
 
 const countryMapping = {
   Fiji: "Fiji - Eastern Hemisphere",
