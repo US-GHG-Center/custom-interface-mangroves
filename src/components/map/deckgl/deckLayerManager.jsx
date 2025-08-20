@@ -10,7 +10,7 @@ const countryMapping = {
   Fiji: "Fiji - Eastern Hemisphere",
   Fiji2: "Fiji - Western Hemisphere",
   Somalia2: "Somalia",
-  Somalia: "Somalia - Southern Coast)"
+  Somalia: "Somalia - Southern Coast"
 }
 
 function camelCaseToSpaces(camelCaseString) {
