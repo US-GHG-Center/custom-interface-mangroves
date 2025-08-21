@@ -5,20 +5,12 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useCallback,
 } from 'react';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { useMapbox } from './mapbox';
 
 const DeckGLContext = createContext();
 
-const INITIAL_VIEW_STATE = {
-  longitude: 120,
-  latitude: 20,
-  zoom: 2,
-  pitch: 0,
-  bearing: 0,
-};
 export const DeckGLProvider = ({ children }) => {
   const { map, isMapboxReady } = useMapbox();
   const deckOverlay = useRef(null);
