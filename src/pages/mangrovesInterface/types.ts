@@ -7,7 +7,7 @@ export interface MangrovesInterfaceConfig {
   rasterApiUrl: string;
 }
 
-export interface MangrovesInterfacePropss {
+export interface MangrovesInterfaceProps {
   config?: Partial<MangrovesInterfaceConfig>;
   defaultCollectionId: string;
   defaultZoomLocation: string;
