@@ -1,10 +1,10 @@
-import { MangrooveInterfaceConfig } from '../../pages/mangrovesInterface/types';
+import { MangrovesInterfaceConfig } from '../../pages/mangrovesInterface/types';
 
 /**
  * Default configuration for the EMIT Interface
  * These values will be used if no user configuration is provided
  */
-const defaultConfig: MangrooveInterfaceConfig = {
+const defaultConfig: MangrovesInterfaceConfig = {
   mapboxToken: process.env.REACT_APP_MAPBOX_TOKEN || '',
   mapboxStyle: process.env.REACT_APP_MAPBOX_STYLE_URL || '',
   basemapStyle: process.env.REACT_APP_BASEMAP_STYLES_MAPBOX_ID || '',
@@ -15,12 +15,12 @@ const defaultConfig: MangrooveInterfaceConfig = {
 
 /**
  * Merges user configuration with default configuration
- * @param {Partial<MangrooveInterfaceConfig>} userConfig - User provided configuration
- * @returns {MangrooveInterfaceConfig} Merged configuration
+ * @param {Partial<MangrovesInterfaceConfig>} userConfig - User provided configuration
+ * @returns {MangrovesInterfaceConfig} Merged configuration
  */
 export const getConfig = (
-  userConfig: Partial<MangrooveInterfaceConfig> = {}
-): MangrooveInterfaceConfig => {
+  userConfig: Partial<MangrovesInterfaceConfig> = {}
+): MangrovesInterfaceConfig => {
   return {
     ...defaultConfig,
     ...userConfig,
@@ -34,13 +34,13 @@ interface ValidationResult {
 
 /**
  * Validates the configuration
- * @param {MangrooveInterfaceConfig} config - Configuration to validate
+ * @param {MangrovesInterfaceConfig} config - Configuration to validate
  * @returns {ValidationResult} Validation result with missing fields if any
  */
 export const validateConfig = (
-  config: MangrooveInterfaceConfig
+  config: MangrovesInterfaceConfig
 ): ValidationResult => {
-  const requiredFields: (keyof MangrooveInterfaceConfig)[] = [
+  const requiredFields: (keyof MangrovesInterfaceConfig)[] = [
     'stacApiUrl',
     'stacSearchApi',
     'mapboxToken',
