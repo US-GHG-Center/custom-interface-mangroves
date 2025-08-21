@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ZOOM_THRESHOLD } from '../utils/constants';
-import { CACHE_TTL, setCache, getCache, clearCache } from '../utils/index';
-import { Tile3DLayer, TileLayer } from '@deck.gl/geo-layers';
+import { CACHE_TTL, setCache, getCache } from '../utils/index';
+import { TileLayer } from '@deck.gl/geo-layers';
 import { BitmapLayer } from '@deck.gl/layers';
-import { GeoJsonLayer, ArcLayer } from '@deck.gl/layers';
 import { useConfig } from '../../../context/configContext';
 
 const RASTER_LAYER_ID = 'mangrove-cog-dynamic';
@@ -11,10 +10,10 @@ const RASTER_LAYER_ID = 'mangrove-cog-dynamic';
 async function fetchTileUrl(selectedAsset, COLLECTION_NAME, RASTER_ENDPOINT) {
   try {
     const registerKey = `raster-register-${COLLECTION_NAME}`;
-    const assetId = selectedAsset?.id
-    const colormap = selectedAsset?.colormap
-    const VMAX = selectedAsset?.rescale[1]
-    const VMIN = selectedAsset?.rescale[0]
+    const assetId = selectedAsset?.id;
+    const colormap = selectedAsset?.colormap;
+    const VMAX = selectedAsset?.rescale[1];
+    const VMIN = selectedAsset?.rescale[0];
     let registerData = getCache(registerKey);
     if (!registerData) {
       const registerResp = await fetch(`${RASTER_ENDPOINT}/searches/register`, {
@@ -63,11 +62,7 @@ export function useDeckRasterLayer({ collectionId, selectedAsset }) {
   const COLLECTION_NAME = collectionId;
   const RASTER_ENDPOINT = config.rasterApiUrl;
   const [rasterLayer, setRasterLayer] = useState(null);
-  useEffect(() => {
-    window.Tile3DLayer = Tile3DLayer;
-    window.GeoJsonLayer = GeoJsonLayer;
-    window.ArcLayer = ArcLayer;
-  }, []);
+
   useEffect(() => {
     if (!selectedAsset?.id || !collectionId) {
       setRasterLayer(null); // Clear the layer if no asset is selected
@@ -75,7 +70,7 @@ export function useDeckRasterLayer({ collectionId, selectedAsset }) {
     }
     async function init() {
       try {
-        let tileUrl = null
+        let tileUrl = null;
         if (selectedAsset?.id && collectionId && selectedAsset?.rescale?.length) {
           tileUrl = await fetchTileUrl(
             selectedAsset,
