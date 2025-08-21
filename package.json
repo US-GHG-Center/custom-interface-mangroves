@@ -1,8 +1,8 @@
 {
-  "name": "emit-interface",
+  "name": "custom-interface-mangroves",
   "version": "0.1.0",
   "private": false,
-  "description": "Standalone EMIT Methane Plume Viewer app",
+  "description": "Standalone Mangroves app",
   "main": "dist/main.js",
   "module": "dist/module.js",
   "source": "src/lib/index.ts",
@@ -14,7 +14,7 @@
     "access": "public"
   },
   "targets": {
-    "emit-app": {
+    "mangroves-app": {
       "source": "public/index.html",
       "context": "browser"
     }
@@ -103,6 +103,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/US-GHG-Center/custom-emit-interface.git"
+    "url": "https://github.com/US-GHG-Center/custom-interface-mangroves.git"
   }
 }

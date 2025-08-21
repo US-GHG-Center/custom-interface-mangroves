@@ -4,7 +4,20 @@ import { useDeckGL, useMapbox } from '../../../context/mapContext';
 import { useAreaBasedCircle } from './areaBasedCircle';
 
 
-const ZOOM_LEVEL_MARGIN = 4
+const ZOOM_LEVEL_MARGIN = 5;
+
+const countryMapping = {
+  Fiji: "Fiji - Eastern Hemisphere",
+  Fiji2: "Fiji - Western Hemisphere",
+  Somalia2: "Somalia",
+  Somalia: "Somalia - Southern Coast"
+}
+
+function camelCaseToSpaces(camelCaseString) {
+  let withSpaces = camelCaseString.replace(/([A-Z])/g, ' $1');
+  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).trim();
+}
+
 export function DeckLayers({
   collectionId,
   stacData,
@@ -61,11 +74,27 @@ export function DeckLayers({
   }, []);
 
   const handleOnHoverOnCircle = useCallback((v) => {
-    if (v) {
+    if (v?.itemId) {
+      const idSplits = v?.itemId?.split('-');
+      const spacedCountryName = camelCaseToSpaces(idSplits.pop()).trim();
+      const countryName = countryMapping[spacedCountryName] ? countryMapping[spacedCountryName] : spacedCountryName;
       deckOverlay.setProps({
         getCursor: () => {
           return 'pointer';
         }
+      })
+      deckOverlay.setProps({
+        getTooltip: () => ({
+          html: countryName,
+          style: {
+            backgroundColor: 'white',
+            color: 'black',
+            fontWeight: 500,
+            fontSize: '14px',
+            padding: '4px 14px',
+            borderRadius: '5px'
+          }
+        })
       })
     } else {
       deckOverlay.setProps({
