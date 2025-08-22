@@ -48,7 +48,7 @@ jobs:
       - name: Validate required variables and secrets
         run: |
           missing_vars=()
-          # Check for required variables 
+          # Check for required variables
           [ -z "${{ vars.PUBLIC_URL }}" ] && missing_vars+=("vars.PUBLIC_URL")
           [ -z "${{ vars.REACT_APP_STAC_API_URL }}" ] && missing_vars+=("vars.REACT_APP_STAC_API_URL")
           [ -z "${{ vars.REACT_APP_RASTER_API_URL }}" ] && missing_vars+=("vars.REACT_APP_RASTER_API_URL")
@@ -65,7 +65,7 @@ jobs:
           fi
         shell: bash
 
-      - name: Build 
+      - name: Build
         working-directory: ./
         env:
           REACT_APP_MAPBOX_TOKEN: ${{ secrets.REACT_APP_MAPBOX_TOKEN }}
@@ -117,10 +117,16 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 sync "./build" s3://${{ DEPLOYMENT_BUCKET }}${{ PUBLIC_URL }}/ --cache-control max-age=30,must-revalidate,s-maxage=604800 --delete
+          aws s3 sync "./build" s3://${{ DEPLOYMENT_BUCKET }}${{ PUBLIC_URL }}/
+        --cache-control max-age=30,must-revalidate,s-maxage=604800 --delete
+
+
+      - name: Calculate PUBLIC URL Parent Path
+        run: echo "PUBLIC_URL_PARENT=$(dirname '${{ vars.PUBLIC_URL }}')" >> $GITHUB_ENV
+
       - name: Request Invalidation to AWS Cloudfront
         uses: oneyedev/aws-cloudfront-invalidation@v1
         with:
-          distribution-id: ${{CF_DISTRIBUTION_ID}}
+          distribution-id: ${{ secrets.CF_DISTRIBUTION_ID }}
           paths: |
-            ${{ PUBLIC_URL }}
+            ${{ env.PUBLIC_URL_PARENT }}/*
