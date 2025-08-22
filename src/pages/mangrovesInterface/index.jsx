@@ -2,12 +2,11 @@ import React from 'react';
 import { DashboardContainer } from '../dashboardContainer';
 import { ConfigProvider } from '../../context/configContext';
 
-export function EmitInterface({
+export function MangrovesInterface({
   config = {},
   defaultCollectionId,
   defaultZoomLocation,
   defaultZoomLevel,
-  defaultStartDate,
 }) {
   return (
     <ConfigProvider userConfig={config}>
@@ -15,7 +14,6 @@ export function EmitInterface({
         collectionId={defaultCollectionId}
         defaultZoomLocation={defaultZoomLocation}
         defaultZoomLevel={defaultZoomLevel}
-        defaultStartDate={defaultStartDate}
       />
     </ConfigProvider>
   );

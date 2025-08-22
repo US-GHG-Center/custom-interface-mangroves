@@ -3,15 +3,16 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { EmitInterface } from './pages/emitInterface';
+import { MangrovesInterface } from './pages/mangrovesInterface';
 
 import './App.css';
+import { HOME_ZOOM_LOCATION, HOME_ZOOM_VALUE } from './utils/constants';
 
 const BASE_PATH = process.env.PUBLIC_URL;
-const defaultCollectionId = 'emit-ch4plume-v1';
-const defaultZoomLocation = [-98.771556, 32.967243];
-const defaultZoomLevel = 4;
-const defaultStartDate = '2022-08-22';
+const defaultCollectionId = 'cms-mangrove-agb-canopyheight-grid-v1.3';
+const defaultZoomLocation = HOME_ZOOM_LOCATION;
+const defaultZoomLevel = HOME_ZOOM_VALUE;
+
 function App() {
   return (
     <Fragment>
@@ -22,11 +23,10 @@ function App() {
             <Route
               path='/'
               element={
-                <EmitInterface
+                <MangrovesInterface
                   defaultCollectionId={defaultCollectionId}
                   defaultZoomLocation={defaultZoomLocation}
                   defaultZoomLevel={defaultZoomLevel}
-                  defaultStartDate={defaultStartDate}
                 />
               }
             />

@@ -1,5 +1,5 @@
-export { EmitInterface } from '../pages/emitInterface';
+export { MangrovesInterface } from '../pages/mangrovesInterface';
 export type {
-  EmitInterfaceProps,
-  EmitInterfaceConfig,
-} from '../pages/emitInterface/types';
+  MangrovesInterfaceConfig,
+  MangrovesInterfaceProps,
+} from '../pages/mangrovesInterface/types';

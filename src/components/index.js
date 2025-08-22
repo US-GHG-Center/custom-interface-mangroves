@@ -23,8 +23,8 @@ export { PersistentDrawerRight } from './ui/drawer';
 export { ColorBar } from './ui/colorBar';
 export { LoadingSpinner } from './ui/loading';
 export { Title } from './ui/title';
-export {ToggleSwitch} from './ui/toggle'
-
+export { ToggleSwitch } from './ui/toggle'
+export { SwitchLayer } from './ui/switchLayer/index.jsx'
 // Utils
 export {
   getSourceId,
