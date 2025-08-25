@@ -1,4 +1,4 @@
-name: Build and Deploy emit
+name: Build and Deploy Mangroves
 on:
   workflow_dispatch:
   push:
