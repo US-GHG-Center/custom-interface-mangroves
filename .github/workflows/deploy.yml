@@ -111,13 +111,13 @@ jobs:
       - name: ConfigureAWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{DEPLOYMENT_ROLE_ARN}}
+          role-to-assume: ${{secrets.DEPLOYMENT_ROLE_ARN}}
           role-session-name: ${{github.repository_owner}}
-          aws-region: ${{ DEPLOYMENT_REGION }}
+          aws-region: ${{vars.DEPLOYMENT_REGION }}
 
       - name: Upload to S3
         run: |
-          aws s3 sync "./build" s3://${{ DEPLOYMENT_BUCKET }}${{ PUBLIC_URL }}/
+          aws s3 sync "./build" s3://${{vars.DEPLOYMENT_BUCKET }}${{vars.PUBLIC_URL }}/
         --cache-control max-age=30,must-revalidate,s-maxage=604800 --delete
 
 
@@ -127,6 +127,6 @@ jobs:
       - name: Request Invalidation to AWS Cloudfront
         uses: oneyedev/aws-cloudfront-invalidation@v1
         with:
-          distribution-id: ${{ secrets.CF_DISTRIBUTION_ID }}
+          distribution-id: ${{secrets.CF_DISTRIBUTION_ID}}
           paths: |
             ${{ env.PUBLIC_URL_PARENT }}/*
