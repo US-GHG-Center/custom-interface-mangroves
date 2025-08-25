@@ -1,23 +1,15 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Dashboard } from '../dashboard/index.jsx';
-import {
-  fetchCollectionMetadata,
-  fetchAllFromSTACAPI,
-  fetchData,
-  getCoverageData,
-} from '../../services/api.js';
-import {
-  transformMetadata,
-  createIndexedCoverageData,
-} from '../../utils/dataTransform.ts';
+import { processSTACItems, getCollectionInfo } from '../../services/api.js'
+import { CACHE_TTL, getCache, setCache } from '../../components/map/utils/index.js'
 
 import { useConfig } from '../../context/configContext/index.jsx';
 
 /**
  * DashboardContainer Component
  *
- * A reusable component that provides the EMIT Methane Plume Viewer interface.
+ * A reusable component that provides the Global Mangrove  interface.
  * This component handles data fetching, state management, and rendering of the dashboard.
  *
  * @component
@@ -31,99 +23,60 @@ export const DashboardContainer = ({
   collectionId,
   defaultZoomLocation,
   defaultZoomLevel,
-  defaultStartDate,
 }) => {
   const { config } = useConfig();
   const [searchParams] = useSearchParams();
-  const [coverage, setCoverage] = useState();
   const [zoomLocation, setZoomLocation] = useState(
     searchParams.get('zoom-location') || defaultZoomLocation
   );
   const [zoomLevel, setZoomLevel] = useState(
-
     searchParams.get('zoom-level') || defaultZoomLevel
   );
-  const [collectionMeta, setCollectionMeta] = useState({});
-  const [plumes, setPlumes] = useState([]);
+  const [stacData, setStacData] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [filterDateRange, setFilterDateRange] = useState({});
+  const [collectionInfo, setCollectionInfo] = useState(null)
+
 
   // Fetch collection metadata and plumes data
   useEffect(() => {
-    let isMounted = true;
     setLoadingData(true);
-
     const init = async () => {
       try {
-        const collectionUrl = `${config.baseStacApiUrl}/collections/${collectionId}`;
-        const collectionMetadata = await fetchCollectionMetadata(collectionUrl);
-
-        if (!isMounted) return;
-        setCollectionMeta(collectionMetadata);
-        const metadata = await fetchData(config.metadataEndpoint);
-        const stacData = await fetchAllFromSTACAPI(config.stacApiUrl);
-        if (!isMounted) return;
-        const { data, latestPlume } = await transformMetadata(
-          metadata,
-          stacData,
-          config
-        );
-        setPlumes(data);
-        setFilterDateRange({
-          startDate: defaultStartDate,
-          endDate: latestPlume?.properties?.datetime,
-        });
+        const stacKey = `stacData-${collectionId}`;
+        let data = getCache(stacKey);
+        if (!data || !data.length) {
+          data = await processSTACItems(config, collectionId);
+          setCache(stacKey, data, CACHE_TTL);
+        }
+        const collectonKey = `collectionInfo-${collectionId}`
+        let collectionInfo = getCache(collectonKey)
+        if (!collectionInfo || !collectionInfo?.id) {
+          collectionInfo = await getCollectionInfo(config, collectionId);
+          setCache(collectonKey, collectionInfo, CACHE_TTL);
+        }
+        setCollectionInfo(collectionInfo)
+        setStacData(data)
         setLoadingData(false);
       } catch (error) {
         console.error('Error fetching data:', error);
-        if (isMounted) {
-          setLoadingData(false);
-        }
       }
     };
 
     init();
+  }, [collectionId, defaultZoomLocation, defaultZoomLevel]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [collectionId, defaultZoomLocation, defaultZoomLevel, defaultStartDate]);
 
-  // Fetch coverage data
-  useEffect(() => {
-    let isMounted = true;
-    const fetchCoverage = async () => {
-      try {
-        const coverageData = await getCoverageData(config.coverageUrl);
-        if (!isMounted) return;
-
-        const indexedCoverageData = createIndexedCoverageData(coverageData);
-        if (coverageData?.features?.length > 0) {
-          setCoverage(indexedCoverageData);
-        }
-      } catch (error) {
-        console.error('Error fetching coverage data:', error);
-      }
-    };
-
-    fetchCoverage();
-    return () => {
-      isMounted = false;
-    };
-  }, [config.coverageUrl]);
 
   return (
     <Dashboard
-      plumes={plumes}
-      coverage={coverage}
+      stacData={stacData}
       zoomLocation={zoomLocation}
       zoomLevel={zoomLevel}
       setZoomLocation={setZoomLocation}
       setZoomLevel={setZoomLevel}
-      collectionMeta={collectionMeta}
-      filterDateRange={filterDateRange}
       collectionId={collectionId}
       loadingData={loadingData}
+      collectionInfo={collectionInfo}
     />
   );
 };
