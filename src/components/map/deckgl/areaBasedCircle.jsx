@@ -37,7 +37,6 @@ export function useAreaBasedCircle({
   stacData,
   handleClickOnCircle,
   showCircle,
-  handleOnHover,
 }) {
   const circleLayer = useMemo(() => {
     if (!stacData) {
@@ -54,7 +53,6 @@ export function useAreaBasedCircle({
       data: filteredData,
       pickable: true,
       visible: showCircle,
-      onHover: info => handleOnHover && handleOnHover(info.object),
       onClick: info => {
         if (info.object?.bbox) {
           handleClickOnCircle && handleClickOnCircle(info.object.bbox);
@@ -73,7 +71,7 @@ export function useAreaBasedCircle({
       radiusMinPixels: 4,
       radiusMaxPixels: 100,
     });
-  }, [stacData, showCircle, handleClickOnCircle, handleOnHover]);
+  }, [stacData, showCircle, handleClickOnCircle]);
 
   return { circleLayer };
 }

@@ -2,16 +2,16 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { useDeckRasterLayer } from './rasterLayer';
 import { useDeckGL, useMapbox } from '../../../context/mapContext';
 import { useAreaBasedCircle } from './areaBasedCircle';
-
+import { useCountryBoundaries } from './countryBoundaries';
+import countryWiseBoundaries from '../../../../static/World_Countries_Boundaries.json';
 
 const ZOOM_LEVEL_MARGIN = 5;
-
 const countryMapping = {
-  Fiji: "Fiji - Eastern Hemisphere",
-  Fiji2: "Fiji - Western Hemisphere",
-  Somalia2: "Somalia",
-  Somalia: "Somalia - Southern Coast"
-}
+  Fiji: 'Fiji - Eastern Hemisphere',
+  Fiji2: 'Fiji - Western Hemisphere',
+  Somalia2: 'Somalia',
+  Somalia: 'Somalia - Southern Coast',
+};
 
 function camelCaseToSpaces(camelCaseString) {
   let withSpaces = camelCaseString.replace(/([A-Z])/g, ' $1');
@@ -27,7 +27,8 @@ export function DeckLayers({
 }) {
   const { deckOverlay } = useDeckGL();
   const { map } = useMapbox();
-  const [showCircle, setShowCircle] = useState(true)
+  const [showCircle, setShowCircle] = useState(true);
+  const [hoveredCountry, setHoveredCountry] = useState(null);
 
   const handleZoomOutEvent = (zoom) => {
     setZoomLevel(zoom);
@@ -39,9 +40,9 @@ export function DeckLayers({
     const handleViewportChange = () => {
       const zoom = map.getZoom();
       if (zoom >= ZOOM_LEVEL_MARGIN) {
-        setShowCircle(false)
+        setShowCircle(false);
       } else {
-        setShowCircle(true)
+        setShowCircle(true);
         handleZoomOutEvent(zoom);
       }
     };
@@ -51,7 +52,6 @@ export function DeckLayers({
     // map.on('moveend', handleViewportChange);
 
     return () => {
-
       map.off('zoomend', handleViewportChange);
       map.off('dragend', handleViewportChange);
       // map.on('moveend', handleViewportChange);
@@ -60,67 +60,89 @@ export function DeckLayers({
 
   const flyToBbox = (bbox) => {
     if (!deckOverlay || !map) return;
-    const fitbox = [[bbox[0], bbox[1]], [bbox[2], bbox[3]]]
+    const fitbox = [
+      [bbox[0], bbox[1]],
+      [bbox[2], bbox[3]],
+    ];
     map.fitBounds(fitbox, {
-      offset: [60, 20],//offset in pixels to compensate for the dialog in the top left corner
+      offset: [60, 20], //offset in pixels to compensate for the dialog in the top left corner
       padding: 20, // Add 20 pixels of padding around the bounding box
-      duration: 2000 // Animate the transition over 2 seconds
+      duration: 2000, // Animate the transition over 2 seconds
     });
   };
 
   const handleClickOnCircle = useCallback((bbox) => {
-    setShowCircle(false)
+    setShowCircle(false);
     flyToBbox(bbox);
   }, []);
 
-  const handleOnHoverOnCircle = useCallback((v) => {
-    if (v?.itemId) {
-      const idSplits = v?.itemId?.split('-');
-      const spacedCountryName = camelCaseToSpaces(idSplits.pop()).trim();
-      const countryName = countryMapping[spacedCountryName] ? countryMapping[spacedCountryName] : spacedCountryName;
-      deckOverlay.setProps({
-        getCursor: () => {
-          return 'pointer';
-        }
-      })
-      deckOverlay.setProps({
-        getTooltip: () => ({
-          html: countryName,
-          style: {
-            backgroundColor: 'white',
-            color: 'black',
-            fontWeight: 500,
-            fontSize: '14px',
-            padding: '4px 14px',
-            borderRadius: '5px'
-          }
-        })
-      })
-    } else {
-      deckOverlay.setProps({
-        getCursor: () => {
-          return 'grab';
-        }
-      })
-    }
+  const handleOnHoverCircle = (object) => {
+    const idSplits = object?.itemId?.split('-');
+    const spacedCountryName = camelCaseToSpaces(idSplits.pop()).trim();
+    const countryName = countryMapping[spacedCountryName]
+      ? countryMapping[spacedCountryName]
+      : spacedCountryName;
+    deckOverlay.setProps({
+      getCursor: () => {
+        return 'pointer';
+      },
+      getTooltip: () => ({
+        html: countryName,
+        style: {
+          backgroundColor: 'white',
+          color: 'black',
+          fontWeight: 500,
+          fontSize: '14px',
+          padding: '4px 14px',
+          borderRadius: '5px',
+        },
+      }),
+    });
+    return;
+  };
 
-  }, [])
+  const handleHoverOnCountries = (object) => {
+    setHoveredCountry(object);
+    deckOverlay.setProps({
+      getCursor: () => {
+        return 'grab';
+      },
+      getTooltip: () => null,
+    });
+    return;
+  };
+
+  const handleOnHover = useCallback(
+    (info) => {
+      const { layer, object } = info;
+
+      if (object && layer.id === 'circle-layer') {
+        handleOnHoverCircle(object);
+      }
+      if (object && layer.id === 'country-boundaries-layer') {
+        handleHoverOnCountries(object);
+      }
+    },
+    [deckOverlay]
+  );
 
   const { rasterLayer } = useDeckRasterLayer({ collectionId, selectedAsset });
   const { circleLayer } = useAreaBasedCircle({
     stacData,
     handleClickOnCircle,
-    handleOnHover: handleOnHoverOnCircle,
     showCircle,
-    setShowMarkers: setShowCircle
+  });
+  const { boundariesLayer } = useCountryBoundaries({
+    countryWiseBoundaries,
+    hoveredCountry,
   });
 
   useEffect(() => {
     if (rasterLayer && circleLayer) {
-      const layers = [rasterLayer, circleLayer];
-      deckOverlay.setProps({ layers: layers });
+      const layers = [boundariesLayer, rasterLayer, circleLayer];
+      deckOverlay.setProps({ layers: layers, onHover: handleOnHover });
     }
-  }, [deckOverlay, circleLayer, rasterLayer]);
+  }, [deckOverlay, circleLayer, rasterLayer, boundariesLayer]);
 
   return <></>;
 }
