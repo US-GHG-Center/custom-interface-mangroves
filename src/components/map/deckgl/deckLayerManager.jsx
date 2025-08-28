@@ -13,6 +13,20 @@ const countryMapping = {
   Somalia: 'Somalia - Southern Coast',
 };
 
+const AREA_THRESHOLD = 500000;
+function filterCountriesByArea(data, threshold, op = 'gt') {
+  const features = data?.features;
+  const filteredCountries = features?.filter((item) => {
+    const area = item?.properties['AREA'];
+    return op === 'gt' ? area > threshold : area < threshold;
+  });
+  const filteredGeoJSON = {
+    ...data,
+    features: filteredCountries,
+  };
+  return filteredGeoJSON;
+}
+
 function camelCaseToSpaces(camelCaseString) {
   let withSpaces = camelCaseString.replace(/([A-Z])/g, ' $1');
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).trim();
@@ -29,6 +43,12 @@ export function DeckLayers({
   const { map } = useMapbox();
   const [showCircle, setShowCircle] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState(null);
+
+  const filteredCountries = filterCountriesByArea(
+    countryWiseBoundaries,
+    AREA_THRESHOLD,
+    'gt'
+  );
 
   const handleZoomOutEvent = (zoom) => {
     setZoomLevel(zoom);
@@ -133,7 +153,7 @@ export function DeckLayers({
     showCircle,
   });
   const { boundariesLayer } = useCountryBoundaries({
-    countryWiseBoundaries,
+    countryWiseBoundaries: filteredCountries,
     hoveredCountry,
   });
 
