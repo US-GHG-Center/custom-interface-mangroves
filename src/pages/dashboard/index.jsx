@@ -12,7 +12,35 @@ import styled from 'styled-components';
 import './index.css';
 import { DeckLayers } from '../../components/map/deckgl/deckLayerManager';
 import { HOME_ZOOM_LOCATION, HOME_ZOOM_VALUE } from '../../utils/constants';
+import countryWiseBoundaries from '../../../static/World_Countries_Boundaries.json';
+import Legend from '../../components/ui/legend';
+import { SearchComponentWrapper } from './helper/SearchWrapper';
 
+export const countryMapping = {
+  Fiji: 'Fiji - Eastern Hemisphere',
+  Fiji2: 'Fiji - Western Hemisphere',
+  Somalia2: 'Somalia',
+  Somalia: 'Somalia - Southern Coast',
+  CarribeanCaymanIslands: 'Cayman Islands',
+  DemocraticRepublicOfCongo: 'Democratic Republic of the Congo',
+  EcuadorWithGalapagos: 'Ecuador',
+  FrenchGuiana: 'French Guiana',
+  GuineaBissau: 'Guinea-Bissau',
+  HongKong: 'Hong Kong SAR',
+  Newzealand: 'New zealand',
+  Philipines: 'Philippines',
+  ReunionAndMauritius: 'Reunion & Mauritius (two different)',
+  Taiwan: 'Taiwan (Province of China)',
+  Tanzania: 'UNITED REPUBLIC OF TANZANIA',
+  UnitedStates: 'United States of America',
+  Vietnam: 'Viet Nam',
+  VirginIslandsUs: 'United States Virgin Islands',
+  WallisAndFutuna: 'Wallis and Futuna Islands',
+  TimorLeste: 'Timor-Leste',
+  Macau: 'Macao SAR',
+  CoteDivoire: 'Cote divoire',
+  Brunei: 'Brunei Darussalam',
+};
 const TITLE = 'Global Mangroves';
 const DESCRIPTION =
   'Mangrove wetlands are among the most productive ecosystems in the world, \
@@ -27,15 +55,19 @@ const HorizontalLayout = styled.div`
   margin: 12px;
 `;
 
+const legendItem = {
+  label: 'Mangroves Location',
+  color: '#f59e0b',
+};
 /**
  * Dashboard Component
  *
- * It integrates map rendering,  data visualization, 
+ * It integrates map rendering,  data visualization,
  *
  * @component
  * @param {Object} props
- * @param {Record<string, STACItem>} props.stacData - All the stacData 
- * @param {Record<string,string>} props.collectionInfo - details of the collection 
+ * @param {Record<string, STACItem>} props.stacData - All the stacData
+ * @param {Record<string,string>} props.collectionInfo - details of the collection
  * @param {Array<number>} props.zoomLocation - [lon, lat] to zoom to.
  * @param {Function} props.setZoomLocation - Setter to update zoom location.
  * @param {number|null} props.zoomLevel - Optional zoom level to apply.
@@ -54,13 +86,14 @@ export function Dashboard({
   collectionInfo,
 }) {
   // states for components/controls
-  const [layers, setLayers] = useState([])
+  const [layers, setLayers] = useState([]);
   const [selectedAssetLayer, setSelectedAssetLayer] = useState(null);
+  const [data, setData] = useState(null);
 
   //create layers only after the collection info is available
   useEffect(() => {
     if (collectionInfo?.id) {
-      const renders = collectionInfo.renders
+      const renders = collectionInfo.renders;
       if (renders && renders['agb']?.rescale[0]) {
         setLayers([
           {
@@ -90,20 +123,51 @@ export function Dashboard({
             colormap: 'greens',
             unit: 'Basal-Area Weighted Height (m)',
           },
-        ])
+        ]);
       }
     }
-  }, [collectionInfo])
-  //update the layer switch after the layers are changed 
+  }, [collectionInfo]);
+
+  useEffect(() => {
+    if (!stacData || !countryWiseBoundaries?.features) {
+      return;
+    }
+    console.log({ stacData });
+    // Helper function for consistent name normalization (lowercase, no spaces)
+    const normalize = (name) => name.toLowerCase().replace(/\s/g, '');
+    const combinedData = stacData?.map((item) => {
+      const idSplits = item?.itemId?.split('-');
+      const _key = normalize(idSplits.pop().trim());
+      const _mappedKey = Object.keys(countryMapping).find(
+        (key) => key.toLowerCase() === _key
+      );
+      const name = countryMapping[_mappedKey]
+        ? normalize(countryMapping[_mappedKey])
+        : _key;
+      const boundaryForCountry = countryWiseBoundaries.features.find(
+        (feature) => {
+          const featureName = feature.properties['VISUALIZATION_NAME'];
+          const normalizedFeatureName = normalize(featureName);
+          return name === normalizedFeatureName;
+        }
+      );
+      return {
+        ...item,
+        boundary: boundaryForCountry,
+        name: name,
+      };
+    });
+    setData(combinedData);
+  }, [stacData, countryWiseBoundaries]);
+  //update the layer switch after the layers are changed
   useEffect(() => {
     if (layers.length && layers[0]) {
-      setSelectedAssetLayer(layers[0])
+      setSelectedAssetLayer(layers[0]);
     }
-  }, [layers])
+  }, [layers]);
 
   //function to handle the reset home
   const handleResetHome = () => {
-
     setZoomLevel(HOME_ZOOM_VALUE);
     setZoomLocation(HOME_ZOOM_LOCATION);
   };
@@ -115,6 +179,9 @@ export function Dashboard({
           <Paper className='title-container'>
             <Title title={TITLE} description={DESCRIPTION} />
             <div className='title-content'>
+              <HorizontalLayout>
+                <SearchComponentWrapper items={data} />
+              </HorizontalLayout>
               <HorizontalLayout>
                 {layers && layers.length && selectedAssetLayer?.id ? (
                   <SwitchLayer
@@ -129,21 +196,23 @@ export function Dashboard({
             </div>
           </Paper>
           <MapZoom zoomLocation={zoomLocation} zoomLevel={zoomLevel} />
-          {selectedAssetLayer?.id &&
+          {selectedAssetLayer?.id && (
             <DeckLayers
               collectionId={collectionId}
-              stacData={stacData}
+              data={data}
               selectedAsset={selectedAssetLayer}
               setZoomLocation={setZoomLocation}
               setZoomLevel={setZoomLevel}
               zoomLevel={zoomLevel}
-            />}
-          <MapControls
-            handleResetHome={handleResetHome}
-          />
+            />
+          )}
+          <MapControls handleResetHome={handleResetHome} />
         </MainMap>
+        {legendItem?.label && <Legend legendItem={legendItem} />}
       </div>
-      {(loadingData || !selectedAssetLayer?.id || !layers.length) && <LoadingSpinner />}
+      {(loadingData || !selectedAssetLayer?.id || !layers.length) && (
+        <LoadingSpinner />
+      )}
     </div>
   );
 }

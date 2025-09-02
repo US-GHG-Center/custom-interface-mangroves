@@ -5,35 +5,15 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import { TrieSearch } from './helper/trieSearch';
 
-/**
- * Search Component
- *
- * Provides a searchable autocomplete dropdown for STAC plume items using a trie-based prefix search.
- * Allows searching by a combination of location (country, state, region) and plume ID.
- *
- * @param {Object} props
- * @param {Array<Object>} props.vizItems - Array of STAC items to be indexed and searched.
- * @param {Function} props.onSelectedVizItemSearch - Callback invoked with `vizItemId` when a plume is selected.
- * @param {Function} props.setFromSearch - Toggles view state to indicate search-initiated navigation.
- *
- * @returns {JSX.Element}
- */
-export function Search({ vizItems, onSelectedVizItemSearch, setFromSearch }) {
-  /**
-   * Creates searchable keys in the format:
-   * `Plume ID: region_state_country_plumeID`
-   */
-  const ids = vizItems?.map((vizItem) => {
-    const id = vizItem?.id;
-    const location = vizItem?.plumeProperties?.location;
-    const idString = id.split('_').join('-');
-    const locationString = location
-      ?.split(',')
-      .reverse()
-      .map((part) => part.trim())
-      .join('_');
-    return `${locationString}_${idString}`;
+
+
+export function Search({ items, onChange }) {
+  const ids = items?.map((item) => {
+    const id = item?.itemId;
+    return id
+    
   });
+
 
   const trieSearch = useRef(null);
   const [searchOptions, setSearchOptions] = useState([]);
@@ -55,9 +35,6 @@ export function Search({ vizItems, onSelectedVizItemSearch, setFromSearch }) {
     /**
      * Reset the search when the input text is cleared
      */
-    if (text === '') {
-      setFromSearch(false);
-    }
     const searchResults = handleSearch(text);
     setSearchOptions(searchResults);
   };
@@ -66,10 +43,7 @@ export function Search({ vizItems, onSelectedVizItemSearch, setFromSearch }) {
     if (!clickedValue) return;
     setSelectedOption(null); // reset to allow re-selection
     setSelectedOption(clickedValue);
-    const temp = clickedValue.split('_')[3];
-    const vizItemId = temp.split('-').join('_');
-    setFromSearch(true);
-    onSelectedVizItemSearch(vizItemId);
+    onChange(clickedValue);
     setSelectedOption(null);
   };
 
@@ -84,13 +58,13 @@ export function Search({ vizItems, onSelectedVizItemSearch, setFromSearch }) {
       freeSolo
       id='free-solo-2-demo'
       disableClearable
-      options={searchOptions}
+      options={ids}
       style={{ width: '100%' }}
       renderInput={(params) => (
         <TextField
           {...params}
           id='outlined-basic'
-          label='Search by Plume ID or Location'
+          label='Search by country'
           variant='outlined'
           style={{ width: '100%', backgroundColor: '#EEEEEE' }}
           onChange={handleOnInputTextChange}
@@ -112,3 +86,4 @@ export function Search({ vizItems, onSelectedVizItemSearch, setFromSearch }) {
     />
   );
 }
+

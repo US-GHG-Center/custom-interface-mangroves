@@ -3,39 +3,29 @@ import { useDeckRasterLayer } from './rasterLayer';
 import { useDeckGL, useMapbox } from '../../../context/mapContext';
 import { useAreaBasedCircle } from './areaBasedCircle';
 import { useCountryBoundaries } from './countryBoundaries';
+import { countryMapping } from '../../../pages/dashboard';
+
 import countryWiseBoundaries from '../../../../static/World_Countries_Boundaries.json';
 
 const ZOOM_LEVEL_MARGIN = 5;
 //this is to map the countries from the stac to the boundary geojson
-const countryMapping = {
-  Fiji: 'Fiji - Eastern Hemisphere',
-  Fiji2: 'Fiji - Western Hemisphere',
-  Somalia2: 'Somalia',
-  Somalia: 'Somalia - Southern Coast',
-  CarribeanCaymanIslands: 'Cayman Islands',
-  DemocraticRepublicOfCongo: 'Democratic Republic of the Congo',
-  EcuadorWithGalapagos: 'Ecuador',
-  FrenchGuiana: 'French Guiana',
-  GuineaBissau: 'Guinea-Bissau',
-  HongKong: 'Hong Kong SAR',
-  Newzealand: 'New zealand',
-  Philipines: 'Philippines',
-  ReunionAndMauritius: 'Reunion & Mauritius (two different)',
-  Taiwan: 'Taiwan (Province of China)',
-  Tanzania: 'UNITED REPUBLIC OF TANZANIA',
-  UnitedStates: 'United States of America',
-  Vietnam: 'Viet Nam',
-  VirginIslandsUs: 'United States Virgin Islands',
-  WallisAndFutuna: 'Wallis and Futuna Islands',
-  TimorLeste: 'Timor-Leste',
-  Macau: 'Macao SAR',
-  CoteDivoire: 'Cote divoire',
-  Brunei: 'Brunei Darussalam',
-};
 
 const AREA_THRESHOLD = 500000;
 
 const BBOX_AREA_THRESHOLD = 70;
+
+const flyToBbox = (bbox) => {
+  if (!bbox || !map) return;
+  const fitbox = [
+    [bbox[0], bbox[1]],
+    [bbox[2], bbox[3]],
+  ];
+  map.fitBounds(fitbox, {
+    offset: [60, 20], //offset in pixels to compensate for the dialog in the top left corner
+    padding: 20, // Add 20 pixels of padding around the bounding box
+    duration: 2000, // Animate the transition over 2 seconds
+  });
+};
 
 function filterCountriesByArea(data, threshold, op = 'gt') {
   if (!data) if (!data.length) return {};
@@ -69,7 +59,7 @@ function camelCaseToSpaces(camelCaseString) {
 
 export function DeckLayers({
   collectionId,
-  stacData,
+  data,
   selectedAsset,
   setZoomLocation,
   setZoomLevel,
@@ -79,7 +69,6 @@ export function DeckLayers({
   const [showCircle, setShowCircle] = useState(true);
   const [showBoundries, setShowBoundaries] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState(null);
-  const [data, setData] = useState(null)
   const [countryWithBoundaries, setCountriesWithBoundaries] = useState(null)
   const [countryWithNoBoundaries, setCountriesWithNoBoundaries] = useState(null)
 
@@ -113,18 +102,6 @@ export function DeckLayers({
     };
   }, [map]);
 
-  const flyToBbox = (bbox) => {
-    if (!deckOverlay || !map) return;
-    const fitbox = [
-      [bbox[0], bbox[1]],
-      [bbox[2], bbox[3]],
-    ];
-    map.fitBounds(fitbox, {
-      offset: [60, 20], //offset in pixels to compensate for the dialog in the top left corner
-      padding: 20, // Add 20 pixels of padding around the bounding box
-      duration: 2000, // Animate the transition over 2 seconds
-    });
-  };
 
 
   const handleOnClick = useCallback((bbox) => {
@@ -194,37 +171,7 @@ export function DeckLayers({
     },
     [deckOverlay]
   );
-  useEffect(() => {
-    if (!stacData || !countryWiseBoundaries?.features) {
-      return;
-    }
-    console.log({ stacData })
-    // Helper function for consistent name normalization (lowercase, no spaces)
-    const normalize = (name) => name.toLowerCase().replace(/\s/g, '');
-    const combinedData = stacData?.map((item) => {
-      const idSplits = item?.itemId?.split('-');
-      const _key = normalize(idSplits.pop().trim());
-      const _mappedKey = Object.keys(countryMapping).find(
-        (key) => key.toLowerCase() === _key
-      );
-      const name = countryMapping[_mappedKey]
-        ? normalize(countryMapping[_mappedKey])
-        : _key;
-      const boundaryForCountry = countryWiseBoundaries.features.find(
-        (feature) => {
-          const featureName = feature.properties['VISUALIZATION_NAME'];
-          const normalizedFeatureName = normalize(featureName);
-          return name === normalizedFeatureName;
-        }
-      );
-      return {
-        ...item,
-        boundary: boundaryForCountry,
-        name: name,
-      };
-    });
-    setData(combinedData);
-  }, [stacData, countryWiseBoundaries]);
+
 
   useEffect(() => {
     //for undefined data
@@ -254,8 +201,8 @@ export function DeckLayers({
 
     // const circleOnlyCountries = filterCountriesByBboxArea(data, BBOX_AREA_THRESHOLD, 'lt')
     // console.log({ circleOnlyCountries })
-    
-    
+
+
 
     setCountriesWithNoBoundaries(circleOnlyCountries)
     const allBoundaries = filteredCountries?.map((item) => { return { ...item?.boundary, bbox: item?.bbox, name: item?.name } });
