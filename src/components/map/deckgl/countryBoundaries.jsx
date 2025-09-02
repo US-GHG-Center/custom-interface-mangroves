@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import { GeoJsonLayer } from '@deck.gl/layers';
 
@@ -8,19 +9,19 @@ const HIGHLIGHT_LINE_COLOR = [30, 144, 255, 255];
 export function useCountryBoundaries({
   countryWiseBoundaries,
   hoveredCountry,
+  showBoundries
 }) {
   const boundariesLayer = useMemo(() => {
     if (!countryWiseBoundaries) {
       return null;
     }
-
     return new GeoJsonLayer({
       id: 'country-boundaries-layer',
       data: countryWiseBoundaries,
-
       // Style Properties
       stroked: true,
       filled: true,
+      visible: showBoundries,
       getLineColor: (feature) => {
         if (
           hoveredCountry &&
@@ -48,7 +49,7 @@ export function useCountryBoundaries({
         getLineColor: [hoveredCountry],
       },
     });
-  }, [countryWiseBoundaries, hoveredCountry]);
+  }, [countryWiseBoundaries, showBoundries, hoveredCountry]);
 
   return { boundariesLayer };
 }

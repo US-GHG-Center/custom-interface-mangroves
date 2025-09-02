@@ -6,26 +6,61 @@ import { useCountryBoundaries } from './countryBoundaries';
 import countryWiseBoundaries from '../../../../static/World_Countries_Boundaries.json';
 
 const ZOOM_LEVEL_MARGIN = 5;
+//this is to map the countries from the stac to the boundary geojson
 const countryMapping = {
   Fiji: 'Fiji - Eastern Hemisphere',
   Fiji2: 'Fiji - Western Hemisphere',
   Somalia2: 'Somalia',
   Somalia: 'Somalia - Southern Coast',
+  CarribeanCaymanIslands: 'Cayman Islands',
+  DemocraticRepublicOfCongo: 'Democratic Republic of the Congo',
+  EcuadorWithGalapagos: 'Ecuador',
+  FrenchGuiana: 'French Guiana',
+  GuineaBissau: 'Guinea-Bissau',
+  HongKong: 'Hong Kong SAR',
+  Newzealand: 'New zealand',
+  Philipines: 'Philippines',
+  ReunionAndMauritius: 'Reunion & Mauritius (two different)',
+  Taiwan: 'Taiwan (Province of China)',
+  Tanzania: 'UNITED REPUBLIC OF TANZANIA',
+  UnitedStates: 'United States of America',
+  Vietnam: 'Viet Nam',
+  VirginIslandsUs: 'United States Virgin Islands',
+  WallisAndFutuna: 'Wallis and Futuna Islands',
+  TimorLeste: 'Timor-Leste',
+  Macau: 'Macao SAR',
+  CoteDivoire: 'Cote divoire',
+  Brunei: 'Brunei Darussalam',
 };
 
 const AREA_THRESHOLD = 500000;
+
+const BBOX_AREA_THRESHOLD = 70;
+
 function filterCountriesByArea(data, threshold, op = 'gt') {
-  const features = data?.features;
-  const filteredCountries = features?.filter((item) => {
-    const area = item?.properties['AREA'];
-    return op === 'gt' ? area > threshold : area < threshold;
+  if (!data) if (!data.length) return {};
+  const filteredCountries = data?.filter((item) => {
+    const area = item?.boundary?.properties?.AREA;
+    return op === 'gt' ? area >= threshold : area < threshold;
   });
-  const filteredGeoJSON = {
-    ...data,
-    features: filteredCountries,
-  };
-  return filteredGeoJSON;
+  return filteredCountries;
 }
+
+function bboxArea(bbox) {
+  if (!bbox || bbox.length !== 4) return 0;
+  const [west, south, east, north] = bbox;
+  return Math.abs(east - west) * Math.abs(north - south);
+}
+
+function filterCountriesByBboxArea(data, threshold, op = 'gt') {
+  if (!data) if (!data.length) return {};
+  const filteredCountries = data?.filter((item) => {
+    const area = bboxArea(item?.bbox)
+    return op === 'gt' ? area >= threshold : area < threshold;
+  });
+  return filteredCountries;
+}
+
 
 function camelCaseToSpaces(camelCaseString) {
   let withSpaces = camelCaseString.replace(/([A-Z])/g, ' $1');
@@ -42,13 +77,11 @@ export function DeckLayers({
   const { deckOverlay } = useDeckGL();
   const { map } = useMapbox();
   const [showCircle, setShowCircle] = useState(true);
+  const [showBoundries, setShowBoundaries] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState(null);
-
-  const filteredCountries = filterCountriesByArea(
-    countryWiseBoundaries,
-    AREA_THRESHOLD,
-    'gt'
-  );
+  const [data, setData] = useState(null)
+  const [countryWithBoundaries, setCountriesWithBoundaries] = useState(null)
+  const [countryWithNoBoundaries, setCountriesWithNoBoundaries] = useState(null)
 
   const handleZoomOutEvent = (zoom) => {
     setZoomLevel(zoom);
@@ -61,7 +94,9 @@ export function DeckLayers({
       const zoom = map.getZoom();
       if (zoom >= ZOOM_LEVEL_MARGIN) {
         setShowCircle(false);
+        setShowBoundaries(false)
       } else {
+        setShowBoundaries(true)
         setShowCircle(true);
         handleZoomOutEvent(zoom);
       }
@@ -91,17 +126,17 @@ export function DeckLayers({
     });
   };
 
-  const handleClickOnCircle = useCallback((bbox) => {
+
+  const handleOnClick = useCallback((bbox) => {
     setShowCircle(false);
+    setShowBoundaries(false)
     flyToBbox(bbox);
   }, []);
 
-  const handleOnHoverCircle = (object) => {
-    const idSplits = object?.itemId?.split('-');
-    const spacedCountryName = camelCaseToSpaces(idSplits.pop()).trim();
-    const countryName = countryMapping[spacedCountryName]
-      ? countryMapping[spacedCountryName]
-      : spacedCountryName;
+  const handleOnHover = (name) => {
+    const countryName = countryMapping[name]
+      ? countryMapping[name]
+      : name;
     deckOverlay.setProps({
       getCursor: () => {
         return 'pointer';
@@ -121,47 +156,142 @@ export function DeckLayers({
     return;
   };
 
-  const handleHoverOnCountries = (object) => {
-    setHoveredCountry(object);
-    deckOverlay.setProps({
-      getCursor: () => {
-        return 'grab';
-      },
-      getTooltip: () => null,
-    });
-    return;
-  };
-
-  const handleOnHover = useCallback(
+  const onHover = useCallback(
     (info) => {
       const { layer, object } = info;
-
       if (object && layer.id === 'circle-layer') {
-        handleOnHoverCircle(object);
+        const idSplits = object?.itemId?.split('-');
+        const spacedCountryName = camelCaseToSpaces(idSplits.pop()).trim();
+        handleOnHover(spacedCountryName);
       }
-      if (object && layer.id === 'country-boundaries-layer') {
-        handleHoverOnCountries(object);
+      else if (object && layer.id === 'country-boundaries-layer') {
+        const name = object?.properties?.VISUALIZATION_NAME
+        handleOnHover(name)
+        setHoveredCountry(object);
+      }
+      else {
+        deckOverlay.setProps({
+          getCursor: () => {
+            return 'grab';
+          },
+          getTooltip: () => null,
+        });
       }
     },
     [deckOverlay]
   );
+  const onClick = useCallback(
+    (info) => {
+      const { layer, object } = info;
+      if (object && layer.id === 'circle-layer') {
+        const bbox = object?.bbox
+        handleOnClick(bbox);
+      }
+      if (object && layer.id === 'country-boundaries-layer') {
+        const bbox = object?.bbox
+        handleOnClick(bbox);
+      }
+    },
+    [deckOverlay]
+  );
+  useEffect(() => {
+    if (!stacData || !countryWiseBoundaries?.features) {
+      return;
+    }
+    console.log({ stacData })
+    // Helper function for consistent name normalization (lowercase, no spaces)
+    const normalize = (name) => name.toLowerCase().replace(/\s/g, '');
+    const combinedData = stacData?.map((item) => {
+      const idSplits = item?.itemId?.split('-');
+      const _key = normalize(idSplits.pop().trim());
+      const _mappedKey = Object.keys(countryMapping).find(
+        (key) => key.toLowerCase() === _key
+      );
+      const name = countryMapping[_mappedKey]
+        ? normalize(countryMapping[_mappedKey])
+        : _key;
+      const boundaryForCountry = countryWiseBoundaries.features.find(
+        (feature) => {
+          const featureName = feature.properties['VISUALIZATION_NAME'];
+          const normalizedFeatureName = normalize(featureName);
+          return name === normalizedFeatureName;
+        }
+      );
+      return {
+        ...item,
+        boundary: boundaryForCountry,
+        name: name,
+      };
+    });
+    setData(combinedData);
+  }, [stacData, countryWiseBoundaries]);
+
+  useEffect(() => {
+    //for undefined data
+    if (!data || !data.length) {
+      return;
+    }
+
+    //compare by country area
+
+    const filteredCountries = filterCountriesByArea(
+      data,
+      AREA_THRESHOLD,
+      'gt'
+    );
+    console.log({ data })
+
+    const circleOnlyCountries = filterCountriesByArea(data, AREA_THRESHOLD, 'lt')
+    console.log({ circleOnlyCountries })
+
+    //compare by BBOX area of the mangroves
+    // const filteredCountries = filterCountriesByBboxArea(
+    //   data,
+    //   BBOX_AREA_THRESHOLD,
+    //   'gt'
+    // );
+    // console.log({ data })
+
+    // const circleOnlyCountries = filterCountriesByBboxArea(data, BBOX_AREA_THRESHOLD, 'lt')
+    // console.log({ circleOnlyCountries })
+    
+    
+
+    setCountriesWithNoBoundaries(circleOnlyCountries)
+    const allBoundaries = filteredCountries?.map((item) => { return { ...item?.boundary, bbox: item?.bbox, name: item?.name } });
+
+    console.log({ allBoundaries })
+    //for demo purpose only
+    // these are the countries without boundary data
+    const allBoundariesNamesOnly = filteredCountries?.map((item) => item?.name);
+
+    const countriesWithNoBoundaries = data?.filter((item) => !item?.boundary)?.map((item) => item?.name)
+    console.log({ countriesWithNoBoundaries })
+
+    const circleOnlyName = circleOnlyCountries.map((item) => item?.name)
+    const countriesInCirclewithNoBoundaries = circleOnlyName?.filter((item) => countriesWithNoBoundaries?.includes(item))
+    console.log({ countriesInCirclewithNoBoundaries })
+
+    setCountriesWithBoundaries({
+      ...countryWiseBoundaries,
+      features: allBoundaries
+    });
+  }, [data]);
 
   const { rasterLayer } = useDeckRasterLayer({ collectionId, selectedAsset });
   const { circleLayer } = useAreaBasedCircle({
-    stacData,
-    handleClickOnCircle,
+    stacData: countryWithNoBoundaries,
     showCircle,
   });
   const { boundariesLayer } = useCountryBoundaries({
-    countryWiseBoundaries: filteredCountries,
+    countryWiseBoundaries: countryWithBoundaries,
     hoveredCountry,
+    showBoundries,
   });
 
   useEffect(() => {
-    if (rasterLayer && circleLayer) {
-      const layers = [boundariesLayer, rasterLayer, circleLayer];
-      deckOverlay.setProps({ layers: layers, onHover: handleOnHover });
-    }
+    const layers = [boundariesLayer, rasterLayer, circleLayer];
+    deckOverlay.setProps({ layers: layers, onHover: onHover, onClick: onClick });
   }, [deckOverlay, circleLayer, rasterLayer, boundariesLayer]);
 
   return <></>;

@@ -27,6 +27,7 @@ export const DeckGLProvider = ({ children }) => {
       },
       getTooltip: () => null,
       onHover: () => null,
+      onClick: () => null,
     });
 
     map.addControl(deckOverlay.current);
