@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useMapbox } from '../../../context/mapContext';
 import { HomeControl } from './home';
-
+import './index.css'
 /**
  * DefaultMapControls Component
  *
