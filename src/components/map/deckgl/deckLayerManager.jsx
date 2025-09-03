@@ -147,6 +147,8 @@ export function DeckLayers({
         setHoveredCountry(object);
       }
       else {
+
+        setHoveredCountry(null)
         deckOverlay.setProps({
           getCursor: () => {
             return 'grab';
