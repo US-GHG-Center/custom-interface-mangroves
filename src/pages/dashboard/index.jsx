@@ -17,14 +17,12 @@ import Legend from '../../components/ui/legend';
 import { SearchComponentWrapper } from './helper/SearchWrapper';
 
 export const countryMapping = {
-  Fiji: 'Fiji - Eastern Hemisphere',
-  Fiji2: 'Fiji - Western Hemisphere',
-  Somalia2: 'Somalia',
-  Somalia: 'Somalia - Southern Coast',
+  Fiji: 'Fiji',
+  Somalia: 'Somalia',
   CarribeanCaymanIslands: 'Cayman Islands',
   DemocraticRepublicOfCongo: 'Democratic Republic of the Congo',
   EcuadorWithGalapagos: 'Ecuador',
-  FrenchGuiana: 'French Guiana',
+  FrenchGuyana: 'French Guyana',
   GuineaBissau: 'Guinea-Bissau',
   HongKong: 'Hong Kong SAR',
   Newzealand: 'New zealand',

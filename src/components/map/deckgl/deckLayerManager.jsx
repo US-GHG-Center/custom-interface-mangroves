@@ -10,7 +10,7 @@ import countryWiseBoundaries from '../../../../static/World_Countries_Boundaries
 const ZOOM_LEVEL_MARGIN = 5;
 //this is to map the countries from the stac to the boundary geojson
 
-const AREA_THRESHOLD = 500000;
+const AREA_THRESHOLD = 200000;
 
 const BBOX_AREA_THRESHOLD = 70;
 
@@ -191,7 +191,7 @@ export function DeckLayers({
     const circleOnlyCountries = filterCountriesByArea(data, AREA_THRESHOLD, 'lt')
     console.log({ circleOnlyCountries })
 
-    //compare by BBOX area of the mangroves
+    // compare by BBOX area of the mangroves
     // const filteredCountries = filterCountriesByBboxArea(
     //   data,
     //   BBOX_AREA_THRESHOLD,
