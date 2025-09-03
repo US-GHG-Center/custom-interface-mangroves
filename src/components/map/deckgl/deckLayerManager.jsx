@@ -10,7 +10,7 @@ import countryWiseBoundaries from '../../../../static/World_Countries_Boundaries
 const ZOOM_LEVEL_MARGIN = 5;
 //this is to map the countries from the stac to the boundary geojson
 
-const AREA_THRESHOLD = 200000;
+const AREA_THRESHOLD = 20000;
 
 const BBOX_AREA_THRESHOLD = 70;
 
