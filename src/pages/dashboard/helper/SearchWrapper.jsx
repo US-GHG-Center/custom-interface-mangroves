@@ -17,9 +17,13 @@ export function SearchComponentWrapper({ items }) {
       duration: 2000, // Animate the transition over 2 seconds
     });
   };
-  const handleClickedOnSearch = (clickedValue) => {
+  const handleClickedOnSearch = (clickedValue, cb) => {
     const item = items?.find((v) => v?.itemId === clickedValue)
     flyToBbox(item?.bbox)
+    setTimeout(() => {
+      cb(); // This will clear the input
+    }, 2000);
+
   }
   return (
     <>
