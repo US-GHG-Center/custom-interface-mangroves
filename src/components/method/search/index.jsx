@@ -8,10 +8,13 @@ import { TrieSearch } from './helper/trieSearch';
 export function Search({ items, onChange }) {
   const ids = items?.map((item) => {
     const id = item?.itemId;
-    // const name = id?.split('-').pop()
-    // let withSpaces = name.replace(/([A-Z])/g, ' $1');
-    // return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).trim();
-    return id;
+    const name = id?.split('-').pop();
+    let withSpaces = name.replace(/([A-Z])/g, ' $1');
+    const displayName = withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).trim();
+    return {
+      id: id,
+      displayName: displayName,
+    };
   });
 
   const trieSearch = useRef(null);
@@ -22,11 +25,12 @@ export function Search({ items, onChange }) {
   /**
    * Performs prefix search using trie.
    * @param {string} prefix - User input
-   * @returns {string[]} Array of matching entries
+   * @returns {Object[]} Array of matching entries
    */
   const handleSearch = (prefix) => {
     const searchResult = trieSearch.current.getRecommendations(prefix);
-    return searchResult;
+    // Return the full objects that match the search
+    return ids?.filter(item => searchResult.includes(item.id)) || [];
   };
 
   /**
@@ -46,25 +50,24 @@ export function Search({ items, onChange }) {
   const clearInputAfterSelection = () => {
     setInputValue('');
     setValue(null);
-  }
+  };
 
   /**
    * Handle option selection
    */
   const handleChange = (event, newValue) => {
-    setValue(newValue);
-    setInputValue(newValue)
-    if (newValue) {
-      onChange(newValue, clearInputAfterSelection);
-      // Clear the input after selection
-
+    if (newValue && typeof newValue === 'object') {
+      setValue(newValue);
+      setInputValue(newValue.displayName);
+      onChange(newValue?.id, clearInputAfterSelection);
     }
   };
 
   useEffect(() => {
     trieSearch.current = new TrieSearch();
     // id in ids are expected to be _ separated for better search result.
-    if (ids && ids.length) trieSearch.current.addItems(ids);
+    const itemIds = ids?.map((item) => item?.id);
+    if (itemIds && itemIds.length) trieSearch.current.addItems(itemIds);
   }, [ids]);
 
   return (
@@ -78,6 +81,21 @@ export function Search({ items, onChange }) {
       inputValue={inputValue}
       onChange={handleChange}
       onInputChange={handleInputChange}
+      getOptionLabel={(option) => {
+        // Handle both string (when freeSolo) and object cases
+        if (typeof option === 'string') {
+          return option;
+        }
+        return option?.displayName || '';
+      }}
+      isOptionEqualToValue={(option, value) => {
+        return option?.id === value?.id;
+      }}
+      renderOption={(props, option) => (
+        <li {...props} key={option.id}>
+          {option.displayName}
+        </li>
+      )}
       renderInput={(params) => (
         <TextField
           {...params}
