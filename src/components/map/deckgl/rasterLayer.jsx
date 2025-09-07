@@ -63,7 +63,7 @@ export function useDeckRasterLayer({ collectionId, selectedAsset, showRaster }) 
   const [rasterLayer, setRasterLayer] = useState(null);
 
   useEffect(() => {
-    if (!selectedAsset?.id || !collectionId ) {
+    if (!selectedAsset?.id || !collectionId) {
       setRasterLayer(null); // Clear the layer if no asset is selected
       return;
     }
@@ -81,8 +81,11 @@ export function useDeckRasterLayer({ collectionId, selectedAsset, showRaster }) 
             const tileLayer = new TileLayer({
               id: RASTER_LAYER_ID,
               data: tileUrl,
-              minZoom: ZOOM_THRESHOLD - 1,
+              // this will fetch tiles if the minZoom Level is reached
+              // this is prefetching the tiles for faster tile loading effect
+              minZoom: ZOOM_THRESHOLD - 2,
               maxZoom: 18,
+              // this will make the raster level visible only after it is enabled 
               visible: showRaster,
               tileSize: 256,
               opacity: 1,
@@ -124,7 +127,7 @@ export function useDeckRasterLayer({ collectionId, selectedAsset, showRaster }) 
     }
 
     init();
-  }, [selectedAsset, collectionId,showRaster]);
+  }, [selectedAsset, collectionId, showRaster]);
 
   return { rasterLayer };
 }
