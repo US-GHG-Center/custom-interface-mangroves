@@ -37,7 +37,7 @@ export function useAreaBasedCircle({
       visible: showCircle,
       stroked: true,
       getPosition: d => d.position,
-      getFillColor: [255, 140, 0],
+      getFillColor: [34, 140, 249],
       getLineColor: [0, 0, 0],
       getLineWidth: 2,
       radiusScale: 50,
