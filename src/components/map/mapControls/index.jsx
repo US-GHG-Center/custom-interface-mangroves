@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useMapbox } from '../../../context/mapContext';
 import { HomeControl } from './home';
+import { BasemapControl } from './selectBasemap';
 import './index.css'
 /**
  * DefaultMapControls Component
@@ -25,6 +26,7 @@ import './index.css'
 
 const DefaultMapControls = ({
   handleResetHome,
+  handleBaseMapSelection
 }) => {
   const { map } = useMapbox();
   const customControlContainer = useRef();
@@ -42,8 +44,13 @@ const DefaultMapControls = ({
     const homeControlElem = homeControl.onAdd(map);
     const mapboxNavigationElem = mapboxNavigation.onAdd(map);
     const mapboxCustomControlContainer = customControlContainer.current;
+    const basemapControl = new BasemapControl(handleBaseMapSelection);
+    const basemapControlElem = basemapControl.onAdd(map);
+
     mapboxCustomControlContainer.append(homeControlElem);
     mapboxCustomControlContainer.append(mapboxNavigationElem);
+    mapboxCustomControlContainer.append(basemapControlElem);
+
 
     return () => {
       if (mapboxNavigation) mapboxNavigation.onRemove();
@@ -74,13 +81,21 @@ const DefaultMapControls = ({
  */
 
 export const MapControls = ({
-
   handleResetHome,
 
 }) => {
+  const handleBaseMapSelection = (basemapStyleName, basemapStyleId = '') => {
+    let completeStyleId = basemapStyleName + `/${basemapStyleId}`;
+    const mapboxStyleBaseUrl = `mapbox://styles/${completeStyleId}`;
+    if (map) {
+      map.setStyle(mapboxStyleBaseUrl);
+    }
+  };
+
   return (
     <>
       <DefaultMapControls
+        handleBaseMapSelection={handleBaseMapSelection}
         handleResetHome={handleResetHome}
       />
     </>
