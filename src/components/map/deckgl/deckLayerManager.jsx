@@ -227,7 +227,7 @@ export function DeckLayers({
     });
   }, [data]);
 
-  const { rasterLayer } = useDeckRasterLayer({ collectionId, selectedAsset });
+  const { rasterLayer } = useDeckRasterLayer({ collectionId, selectedAsset,showRaster:!showCircle });
   const { circleLayer } = useAreaBasedCircle({
     stacData: countryWithNoBoundaries,
     showCircle,

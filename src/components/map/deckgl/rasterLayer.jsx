@@ -56,15 +56,14 @@ async function fetchTileUrl(selectedAsset, COLLECTION_NAME, RASTER_ENDPOINT) {
     return false;
   }
 }
-export function useDeckRasterLayer({ collectionId, selectedAsset }) {
+export function useDeckRasterLayer({ collectionId, selectedAsset, showRaster }) {
   const { config } = useConfig();
-
   const COLLECTION_NAME = collectionId;
   const RASTER_ENDPOINT = config.rasterApiUrl;
   const [rasterLayer, setRasterLayer] = useState(null);
 
   useEffect(() => {
-    if (!selectedAsset?.id || !collectionId) {
+    if (!selectedAsset?.id || !collectionId ) {
       setRasterLayer(null); // Clear the layer if no asset is selected
       return;
     }
@@ -84,6 +83,7 @@ export function useDeckRasterLayer({ collectionId, selectedAsset }) {
               data: tileUrl,
               minZoom: ZOOM_THRESHOLD - 1,
               maxZoom: 18,
+              visible: showRaster,
               tileSize: 256,
               opacity: 1,
               pickable: false,
@@ -124,7 +124,7 @@ export function useDeckRasterLayer({ collectionId, selectedAsset }) {
     }
 
     init();
-  }, [selectedAsset, collectionId]);
+  }, [selectedAsset, collectionId,showRaster]);
 
   return { rasterLayer };
 }
