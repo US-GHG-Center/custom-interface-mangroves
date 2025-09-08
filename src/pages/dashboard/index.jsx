@@ -7,6 +7,7 @@ import {
   MapControls,
   MapZoom,
   SwitchLayer,
+  CustomModal,
 } from '../../components';
 import styled from 'styled-components';
 import './index.css';
@@ -40,6 +41,7 @@ export const countryMapping = {
   Brunei: 'Brunei Darussalam',
 };
 const TITLE = 'Global Mangroves';
+const modalTitle = 'Information'
 const DESCRIPTION =
   'Mangrove wetlands are among the most productive ecosystems in the world, \
    capturing and storing significant amounts of carbon in the aboveground \
@@ -56,6 +58,7 @@ const HorizontalLayout = styled.div`
 const legendItem = {
   label: 'Countries with Mangroves',
   color: '#228ef9',
+  text: "Click inside a country boundary to see the mangrove data. Locations of smaller countries are indicated with a dot."
 };
 /**
  * Dashboard Component
@@ -88,6 +91,8 @@ export function Dashboard({
   const [selectedAssetLayer, setSelectedAssetLayer] = useState(null);
   const [data, setData] = useState(null);
   const [showLegend, setShowLegend] = useState(true);
+  const [openModal, setOpenModal] = useState(true)
+  const [showModalAgain, setShowModalAgain] = useState(false)
 
   //create layers only after the collection info is available
   useEffect(() => {
@@ -230,6 +235,9 @@ export function Dashboard({
       {(loadingData || !selectedAssetLayer?.id || !layers.length) && (
         <LoadingSpinner />
       )}
+      <CustomModal setOpen={setOpenModal} open={openModal} showAgain={showModalAgain} setShowAgain={setShowModalAgain} title={modalTitle} >
+        <Legend legendItem={legendItem} />
+      </CustomModal >
     </div>
   );
 }

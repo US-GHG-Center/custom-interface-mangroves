@@ -5,11 +5,11 @@
   /* Position this on your map as needed */
 
   /* Styling */
-  display: inline-flex; /* Lays out the circle and text in a row */
-  align-items: center;
-  background-color: rgba(); /* Dark, semi-transparent background */
-  padding: 0px 0px;
+  display: flex;
+  align-items: left;
+  padding: 0px 0x;
   border-radius: 8px;
+  flex-direction: column;
 }
 
 /* The colored circle */
@@ -20,18 +20,19 @@
   margin-right: 10px;
   flex-shrink: 0; /* Prevents the circle from shrinking */
 }
-/* The colored line */
-.legend-line {
-  width: 15px;
-  height: 4px;
-  margin-right: 10px;
-  margin-left: 3px;
-}
 
 /* The text label */
 .legend-label {
   font-family: 'Public sans';
   font-size: 14px;
   font-weight: 450;
-  color: #000000; /* Light text color for contrast */
+  color: #000000; 
+}
+
+.legend-text {
+  font-family: 'Public sans';
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(0,0,0,0.6);
+  align: center;
 }
