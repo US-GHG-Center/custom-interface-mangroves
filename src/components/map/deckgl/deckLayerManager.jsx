@@ -89,6 +89,7 @@ export function DeckLayers({
         setShowCircle(true);
         handleZoomOutEvent(zoom);
       }
+      setZoomLevel(zoom)
     };
 
     map.on('zoomend', handleViewportChange);
@@ -227,7 +228,7 @@ export function DeckLayers({
     });
   }, [data]);
 
-  const { rasterLayer } = useDeckRasterLayer({ collectionId, selectedAsset,showRaster:!showCircle });
+  const { rasterLayer } = useDeckRasterLayer({ collectionId, selectedAsset, showRaster: !showCircle });
   const { circleLayer } = useAreaBasedCircle({
     stacData: countryWithNoBoundaries,
     showCircle,

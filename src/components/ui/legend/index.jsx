@@ -6,6 +6,10 @@ const Legend = ({ legendItem }) => {
   return (
     <div className="legend-container">
       <span
+        className="legend-line"
+        style={{ backgroundColor: legendItem.color }}
+      ></span>
+      <span
         className="legend-circle"
         style={{ backgroundColor: legendItem.color }}
       ></span>

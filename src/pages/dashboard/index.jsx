@@ -15,7 +15,7 @@ import { HOME_ZOOM_LOCATION, HOME_ZOOM_VALUE } from '../../utils/constants';
 import countryWiseBoundaries from '../../../static/World_Countries_Boundaries.json';
 import Legend from '../../components/ui/legend';
 import { SearchComponentWrapper } from './helper/SearchWrapper';
-
+const ZOOM_LEVEL_MARGIN = 5
 export const countryMapping = {
   Fiji: 'Fiji',
   Somalia: 'Somalia',
@@ -54,8 +54,8 @@ const HorizontalLayout = styled.div`
 `;
 
 const legendItem = {
-  label: 'Mangroves Location',
-  color: '#f59e0b',
+  label: 'Countries with Mangroves',
+  color: '#228ef9',
 };
 /**
  * Dashboard Component
@@ -87,6 +87,7 @@ export function Dashboard({
   const [layers, setLayers] = useState([]);
   const [selectedAssetLayer, setSelectedAssetLayer] = useState(null);
   const [data, setData] = useState(null);
+  const [showLegend, setShowLegend] = useState(true);
 
   //create layers only after the collection info is available
   useEffect(() => {
@@ -125,6 +126,14 @@ export function Dashboard({
       }
     }
   }, [collectionInfo]);
+
+  useEffect(() => {
+    if (zoomLevel > ZOOM_LEVEL_MARGIN) {
+      setShowLegend(false);
+    } else {
+      setShowLegend(true)
+    }
+  }, [zoomLevel]);
 
   useEffect(() => {
     if (!stacData || !countryWiseBoundaries?.features) {
@@ -179,18 +188,29 @@ export function Dashboard({
             <div className='title-content'>
               <HorizontalLayout>
                 <SearchComponentWrapper items={data} />
-              </HorizontalLayout>
-              <HorizontalLayout>
-                {layers && layers.length && selectedAssetLayer?.id ? (
-                  <SwitchLayer
-                    layers={layers}
-                    setSelectedAssetLayer={setSelectedAssetLayer}
-                    selectedAssetLayer={selectedAssetLayer}
-                  />
-                ) : (
-                  <></>
-                )}
-              </HorizontalLayout>
+              </HorizontalLayout>{' '}
+
+              {showLegend ? (
+                <HorizontalLayout>
+                  {legendItem && legendItem?.label ? (
+                    <Legend legendItem={legendItem} />
+                  ) : (
+                    <></>
+                  )}
+                </HorizontalLayout>
+              ) : (
+                <HorizontalLayout>
+                  {layers && layers.length && selectedAssetLayer?.id ? (
+                    <SwitchLayer
+                      layers={layers}
+                      setSelectedAssetLayer={setSelectedAssetLayer}
+                      selectedAssetLayer={selectedAssetLayer}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </HorizontalLayout>
+              )}
             </div>
           </Paper>
           <MapZoom zoomLocation={zoomLocation} zoomLevel={zoomLevel} />
@@ -206,7 +226,6 @@ export function Dashboard({
           )}
           <MapControls handleResetHome={handleResetHome} />
         </MainMap>
-        {legendItem?.label && <Legend legendItem={legendItem} />}
       </div>
       {(loadingData || !selectedAssetLayer?.id || !layers.length) && (
         <LoadingSpinner />
