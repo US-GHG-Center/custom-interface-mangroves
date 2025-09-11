@@ -7,7 +7,6 @@ import {
   MapControls,
   MapZoom,
   SwitchLayer,
-  CustomModal,
 } from '../../components';
 import styled from 'styled-components';
 import './index.css';
@@ -41,7 +40,6 @@ export const countryMapping = {
   Brunei: 'Brunei Darussalam',
 };
 const TITLE = 'Global Mangroves';
-const modalTitle = 'Information'
 const DESCRIPTION =
   'Mangrove wetlands are among the most productive ecosystems in the world, \
    capturing and storing significant amounts of carbon in the aboveground \
@@ -235,9 +233,6 @@ export function Dashboard({
       {(loadingData || !selectedAssetLayer?.id || !layers.length) && (
         <LoadingSpinner />
       )}
-      <CustomModal setOpen={setOpenModal} open={openModal} showAgain={showModalAgain} setShowAgain={setShowModalAgain} title={modalTitle} >
-        <Legend legendItem={legendItem} />
-      </CustomModal >
     </div>
   );
 }
