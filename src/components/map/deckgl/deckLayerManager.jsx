@@ -5,12 +5,12 @@ import { useAreaBasedCircle } from './areaBasedCircle';
 import { useCountryBoundaries } from './countryBoundaries';
 import { countryMapping } from '../../../pages/dashboard';
 
-import countryWiseBoundaries from '../../../../static/World_Countries_Boundaries.json';
+import countryWiseBoundaries from '../../../../static/countries.json';
 
 const ZOOM_LEVEL_MARGIN = 5;
 //this is to map the countries from the stac to the boundary geojson
 
-const AREA_THRESHOLD = 20000;
+const AREA_THRESHOLD = 1200; //in square miles
 
 const BBOX_AREA_THRESHOLD = 70;
 
@@ -30,7 +30,7 @@ const flyToBbox = (bbox) => {
 function filterCountriesByArea(data, threshold, op = 'gt') {
   if (!data) if (!data.length) return {};
   const filteredCountries = data?.filter((item) => {
-    const area = item?.boundary?.properties?.AREA;
+    const area = item?.boundary?.properties?.AREA_SQMI || 0;
     return op === 'gt' ? area >= threshold : area < threshold;
   });
   return filteredCountries;
@@ -143,7 +143,7 @@ export function DeckLayers({
         handleOnHover(spacedCountryName);
       }
       else if (object && layer.id === 'country-boundaries-layer') {
-        const name = object?.properties?.VISUALIZATION_NAME
+        const name = object?.properties?.NAME
         handleOnHover(name)
         setHoveredCountry(object);
       }
@@ -189,10 +189,8 @@ export function DeckLayers({
       AREA_THRESHOLD,
       'gt'
     );
-    console.log({ data })
-
+    
     const circleOnlyCountries = filterCountriesByArea(data, AREA_THRESHOLD, 'lt')
-    console.log({ circleOnlyCountries })
 
     // compare by BBOX area of the mangroves
     // const filteredCountries = filterCountriesByBboxArea(
@@ -203,24 +201,18 @@ export function DeckLayers({
     // console.log({ data })
 
     // const circleOnlyCountries = filterCountriesByBboxArea(data, BBOX_AREA_THRESHOLD, 'lt')
-    // console.log({ circleOnlyCountries })
-
-
 
     setCountriesWithNoBoundaries(circleOnlyCountries)
     const allBoundaries = filteredCountries?.map((item) => { return { ...item?.boundary, bbox: item?.bbox, name: item?.name } });
 
-    console.log({ allBoundaries })
     //for demo purpose only
     // these are the countries without boundary data
     const allBoundariesNamesOnly = filteredCountries?.map((item) => item?.name);
 
     const countriesWithNoBoundaries = data?.filter((item) => !item?.boundary)?.map((item) => item?.name)
-    console.log({ countriesWithNoBoundaries })
 
     const circleOnlyName = circleOnlyCountries.map((item) => item?.name)
     const countriesInCirclewithNoBoundaries = circleOnlyName?.filter((item) => countriesWithNoBoundaries?.includes(item))
-    console.log({ countriesInCirclewithNoBoundaries })
 
     setCountriesWithBoundaries({
       ...countryWiseBoundaries,

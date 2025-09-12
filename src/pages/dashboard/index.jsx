@@ -13,32 +13,28 @@ import styled from 'styled-components';
 import './index.css';
 import { DeckLayers } from '../../components/map/deckgl/deckLayerManager';
 import { HOME_ZOOM_LOCATION, HOME_ZOOM_VALUE } from '../../utils/constants';
-import countryWiseBoundaries from '../../../static/World_Countries_Boundaries.json';
+import countryWiseBoundaries from '../../../static/countries.json';
 import Legend from '../../components/ui/legend';
 import { SearchComponentWrapper } from './helper/SearchWrapper';
 const ZOOM_LEVEL_MARGIN = 5
 export const countryMapping = {
   Fiji: 'Fiji',
   Somalia: 'Somalia',
-  CarribeanCaymanIslands: 'Cayman Islands',
-  DemocraticRepublicOfCongo: 'Democratic Republic of the Congo',
+  CarribeanCaymanIslands: 'Cayman Is.',
+  DemocraticRepublicOfCongo: 'Congo',
   EcuadorWithGalapagos: 'Ecuador',
-  FrenchGuyana: 'French Guyana',
+  FrenchGuyana: 'Guyana',
   GuineaBissau: 'Guinea-Bissau',
-  HongKong: 'Hong Kong SAR',
-  Newzealand: 'New zealand',
+  HongKong: 'Hong Kong',
+  Newzealand: 'New Zealand',
   Philipines: 'Philippines',
   ReunionAndMauritius: 'Reunion & Mauritius (two different)',
-  Taiwan: 'Taiwan (Province of China)',
-  Tanzania: 'UNITED REPUBLIC OF TANZANIA',
   UnitedStates: 'United States of America',
-  Vietnam: 'Viet Nam',
-  VirginIslandsUs: 'United States Virgin Islands',
-  WallisAndFutuna: 'Wallis and Futuna Islands',
+  VirginIslandsUs: 'U.S. Virgin Is.',
+  WallisAndFutuna: 'Wallis and Futuna Is.',
   TimorLeste: 'Timor-Leste',
-  Macau: 'Macao SAR',
-  CoteDivoire: 'Cote divoire',
-  Brunei: 'Brunei Darussalam',
+  Macau: 'Macao',
+  // CoteDivoire: 'Cote divoire',
 };
 const TITLE = 'Global Mangroves';
 const modalTitle = 'Information'
@@ -158,7 +154,7 @@ export function Dashboard({
         : _key;
       const boundaryForCountry = countryWiseBoundaries.features.find(
         (feature) => {
-          const featureName = feature.properties['VISUALIZATION_NAME'];
+          const featureName = feature.properties['NAME'];
           const normalizedFeatureName = normalize(featureName);
           return name === normalizedFeatureName;
         }
