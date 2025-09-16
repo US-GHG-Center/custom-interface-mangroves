@@ -12,16 +12,18 @@ const BasemapSelector = ({ setBaseMap }) => {
   const basemapOptions = [
     {
       label: 'Satellite',
-      style: 'covid-nasa',
-      id: 'cldu1cb8f00ds01p6gi583w1m',
+      style: 'teamimpact',
+      id: 'cmfmyih22000601s2hz1d044a',
     },
     {
       label: 'Light',
-      style: 'mapbox/light-v11',
+      style: 'teamimpact',
+      id: 'cmfmwwbl5005201rz9z3j8ezy'
     },
     {
       label: 'Dark',
-      style: 'mapbox://styles/teamimpact/cmfl9u8cg00bz01qwg0cr9mv3',
+      style: 'teamimpact',
+      id: 'cmfl9u8cg00bz01qwg0cr9mv3'
     },
   ];
 
