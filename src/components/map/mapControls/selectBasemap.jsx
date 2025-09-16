@@ -21,7 +21,7 @@ const BasemapSelector = ({ setBaseMap }) => {
     },
     {
       label: 'Dark',
-      style: 'mapbox/dark-v11',
+      style: 'mapbox://styles/teamimpact/cmfl9u8cg00bz01qwg0cr9mv3',
     },
   ];
 

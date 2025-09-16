@@ -3,16 +3,14 @@ import { useDeckRasterLayer } from './rasterLayer';
 import { useDeckGL, useMapbox } from '../../../context/mapContext';
 import { useAreaBasedCircle } from './areaBasedCircle';
 import { useCountryBoundaries } from './countryBoundaries';
+import { useAllCountryBoundaries } from './allCountryBoundaries';
 import { countryMapping } from '../../../pages/dashboard';
-
 import countryWiseBoundaries from '../../../../static/countries.json';
 
 const ZOOM_LEVEL_MARGIN = 5;
 //this is to map the countries from the stac to the boundary geojson
 
 const AREA_THRESHOLD = 1200; //in square miles
-
-const BBOX_AREA_THRESHOLD = 70;
 
 const flyToBbox = (bbox) => {
   if (!bbox || !map) return;
@@ -35,22 +33,6 @@ function filterCountriesByArea(data, threshold, op = 'gt') {
   });
   return filteredCountries;
 }
-
-function bboxArea(bbox) {
-  if (!bbox || bbox.length !== 4) return 0;
-  const [west, south, east, north] = bbox;
-  return Math.abs(east - west) * Math.abs(north - south);
-}
-
-function filterCountriesByBboxArea(data, threshold, op = 'gt') {
-  if (!data) if (!data.length) return {};
-  const filteredCountries = data?.filter((item) => {
-    const area = bboxArea(item?.bbox)
-    return op === 'gt' ? area >= threshold : area < threshold;
-  });
-  return filteredCountries;
-}
-
 
 function camelCaseToSpaces(camelCaseString) {
   let withSpaces = camelCaseString.replace(/([A-Z])/g, ' $1');
@@ -83,9 +65,9 @@ export function DeckLayers({
       const zoom = map.getZoom();
       if (zoom >= ZOOM_LEVEL_MARGIN) {
         setShowCircle(false);
-        setShowBoundaries(false)
+        setShowBoundaries(false);
       } else {
-        setShowBoundaries(true)
+        setShowBoundaries(true);
         setShowCircle(true);
         handleZoomOutEvent(zoom);
       }
@@ -103,11 +85,9 @@ export function DeckLayers({
     };
   }, [map]);
 
-
-
   const handleOnClick = useCallback((bbox) => {
     setShowCircle(false);
-    setShowBoundaries(false)
+    setShowBoundaries(false);
     flyToBbox(bbox);
   }, []);
 
@@ -142,13 +122,12 @@ export function DeckLayers({
         const spacedCountryName = camelCaseToSpaces(idSplits.pop()).trim();
         handleOnHover(spacedCountryName);
       }
-      else if (object && layer.id === 'country-boundaries-layer') {
+      else if (object && (layer.id === 'country-boundaries-layer')) {
         const name = object?.properties?.NAME
         handleOnHover(name)
         setHoveredCountry(object);
       }
       else {
-
         setHoveredCountry(null)
         deckOverlay.setProps({
           getCursor: () => {
@@ -167,7 +146,7 @@ export function DeckLayers({
         const bbox = object?.bbox
         handleOnClick(bbox);
       }
-      if (object && layer.id === 'country-boundaries-layer') {
+      if (object && (layer.id === 'country-boundaries-layer')) {
         const bbox = object?.bbox
         handleOnClick(bbox);
       }
@@ -189,30 +168,11 @@ export function DeckLayers({
       AREA_THRESHOLD,
       'gt'
     );
-    
+
     const circleOnlyCountries = filterCountriesByArea(data, AREA_THRESHOLD, 'lt')
-
-    // compare by BBOX area of the mangroves
-    // const filteredCountries = filterCountriesByBboxArea(
-    //   data,
-    //   BBOX_AREA_THRESHOLD,
-    //   'gt'
-    // );
-    // console.log({ data })
-
-    // const circleOnlyCountries = filterCountriesByBboxArea(data, BBOX_AREA_THRESHOLD, 'lt')
 
     setCountriesWithNoBoundaries(circleOnlyCountries)
     const allBoundaries = filteredCountries?.map((item) => { return { ...item?.boundary, bbox: item?.bbox, name: item?.name } });
-
-    //for demo purpose only
-    // these are the countries without boundary data
-    const allBoundariesNamesOnly = filteredCountries?.map((item) => item?.name);
-
-    const countriesWithNoBoundaries = data?.filter((item) => !item?.boundary)?.map((item) => item?.name)
-
-    const circleOnlyName = circleOnlyCountries.map((item) => item?.name)
-    const countriesInCirclewithNoBoundaries = circleOnlyName?.filter((item) => countriesWithNoBoundaries?.includes(item))
 
     setCountriesWithBoundaries({
       ...countryWiseBoundaries,
@@ -230,11 +190,14 @@ export function DeckLayers({
     hoveredCountry,
     showBoundries,
   });
+  const { allBoundariesLayer } = useAllCountryBoundaries({
+    allCountriesGeojson: countryWiseBoundaries,
+  });
 
   useEffect(() => {
-    const layers = [boundariesLayer, rasterLayer, circleLayer];
+    const layers = [allBoundariesLayer, boundariesLayer, rasterLayer, circleLayer];
     deckOverlay.setProps({ layers: layers, onHover: onHover, onClick: onClick });
-  }, [deckOverlay, circleLayer, rasterLayer, boundariesLayer]);
+  }, [deckOverlay, circleLayer, rasterLayer, boundariesLayer, allBoundariesLayer]);
 
   return <></>;
 }
