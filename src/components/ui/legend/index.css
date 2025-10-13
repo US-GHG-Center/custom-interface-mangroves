@@ -1,0 +1,38 @@
+/* Legend.css */
+
+/* Main container for the legend */
+.legend-container {
+  /* Position this on your map as needed */
+
+  /* Styling */
+  display: flex;
+  align-items: left;
+  padding: 0px 0x;
+  border-radius: 8px;
+  flex-direction: column;
+}
+
+/* The colored circle */
+.legend-circle {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0; /* Prevents the circle from shrinking */
+}
+
+/* The text label */
+.legend-label {
+  font-family: 'Public sans';
+  font-size: 14px;
+  font-weight: 450;
+  color: #000000; 
+}
+
+.legend-text {
+  font-family: 'Public sans';
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(0,0,0,0.6);
+  align: center;
+}

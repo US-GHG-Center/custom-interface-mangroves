@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #222fbf;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -44,6 +44,7 @@ body,
 #root {
   height: 100%;
   background-color: white;
+  font-family: 'Public sans';
 }
 
 .fullSize {
@@ -60,5 +61,14 @@ body,
 }
 
 :root {
-  --main-blue: #082a64;
+  --main-grey: #252525;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Public sans';
 }

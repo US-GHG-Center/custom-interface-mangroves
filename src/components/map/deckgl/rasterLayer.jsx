@@ -56,9 +56,8 @@ async function fetchTileUrl(selectedAsset, COLLECTION_NAME, RASTER_ENDPOINT) {
     return false;
   }
 }
-export function useDeckRasterLayer({ collectionId, selectedAsset }) {
+export function useDeckRasterLayer({ collectionId, selectedAsset, showRaster }) {
   const { config } = useConfig();
-
   const COLLECTION_NAME = collectionId;
   const RASTER_ENDPOINT = config.rasterApiUrl;
   const [rasterLayer, setRasterLayer] = useState(null);
@@ -82,8 +81,12 @@ export function useDeckRasterLayer({ collectionId, selectedAsset }) {
             const tileLayer = new TileLayer({
               id: RASTER_LAYER_ID,
               data: tileUrl,
-              minZoom: ZOOM_THRESHOLD - 1,
+              // this will fetch tiles if the minZoom Level is reached
+              // this is prefetching the tiles for faster tile loading effect
+              minZoom: ZOOM_THRESHOLD - 2,
               maxZoom: 18,
+              // this will make the raster level visible only after it is enabled 
+              visible: showRaster,
               tileSize: 256,
               opacity: 1,
               pickable: false,
@@ -124,7 +127,7 @@ export function useDeckRasterLayer({ collectionId, selectedAsset }) {
     }
 
     init();
-  }, [selectedAsset, collectionId]);
+  }, [selectedAsset, collectionId, showRaster]);
 
   return { rasterLayer };
 }
