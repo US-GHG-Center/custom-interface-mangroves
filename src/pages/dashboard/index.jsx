@@ -35,7 +35,7 @@ export const countryMapping = {
   Macau: 'Macao',
   // CoteDivoire: 'Cote divoire',
 };
-const TITLE = 'Global Mangroves';
+const TITLE = 'Global Mangrove Aboveground Biomass';
 const DESCRIPTION =
   'Mangrove wetlands are among the most productive ecosystems in the world, \
    capturing and storing significant amounts of carbon in the aboveground \
