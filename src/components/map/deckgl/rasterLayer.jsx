@@ -3,6 +3,7 @@ import { ZOOM_THRESHOLD } from '../utils/constants';
 import { CACHE_TTL, setCache, getCache } from '../utils/index';
 import { TileLayer } from '@deck.gl/geo-layers';
 import { BitmapLayer } from '@deck.gl/layers';
+import { GL } from '@luma.gl/constants';
 import { useConfig } from '../../../context/configContext';
 
 const RASTER_LAYER_ID = 'mangrove-cog-dynamic';
@@ -27,6 +28,9 @@ async function fetchTileUrl(selectedAsset, COLLECTION_NAME, RASTER_ENDPOINT) {
           },
         }),
       });
+      if (!registerResp.ok) {
+        throw new Error(`Failed to register search: ${registerResp.statusText}`);
+      }
       registerData = await registerResp.json();
       setCache(registerKey, registerData, CACHE_TTL);
     }
@@ -44,6 +48,9 @@ async function fetchTileUrl(selectedAsset, COLLECTION_NAME, RASTER_ENDPOINT) {
     let tilejsonData = getCache(tilejsonUrl);
     if (!tilejsonData) {
       const tilejsonResp = await fetch(tilejsonUrl);
+      if (!tilejsonResp.ok) {
+        throw new Error(`Failed to fetch tilejson: ${tilejsonResp.statusText}`);
+      }
       tilejsonData = await tilejsonResp.json();
       setCache(tilejsonUrl, tilejsonData, CACHE_TTL);
     }
@@ -94,6 +101,12 @@ export function useDeckRasterLayer({ collectionId, selectedAsset, showRaster }) 
               onTileError: (error) => {
                 console.log('Error occurred', error);
               },
+              loadOptions: {
+                image: {
+                  type: 'image',
+                  premultiplyAlpha: false
+                }
+              },
               renderSubLayers: (props) => {
                 try {
                   const {
@@ -104,6 +117,12 @@ export function useDeckRasterLayer({ collectionId, selectedAsset, showRaster }) 
                     data: null,
                     image: props.data,
                     bounds: [west, south, east, north],
+                    textureParameters: {
+                      [GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
+                      [GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE,
+                      [GL.TEXTURE_MIN_FILTER]: GL.LINEAR,
+                      [GL.TEXTURE_MAG_FILTER]: GL.LINEAR
+                    },
                     colorDomain: [0, 255],
                     colorRange: [
                       [0, 0, 0, 0],
