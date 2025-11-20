@@ -163,6 +163,7 @@ export function Dashboard({
         name: name,
       };
     });
+    combinedData?.sort((a, b) => a.name.localeCompare(b.name));
     setData(combinedData);
   }, [stacData, countryWiseBoundaries]);
   //update the layer switch after the layers are changed
