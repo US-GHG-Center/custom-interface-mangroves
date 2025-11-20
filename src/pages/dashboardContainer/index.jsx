@@ -63,7 +63,7 @@ export const DashboardContainer = ({
     };
 
     init();
-  }, [collectionId, defaultZoomLocation, defaultZoomLevel]);
+  }, [collectionId]);
 
 
 
