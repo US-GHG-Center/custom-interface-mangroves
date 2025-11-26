@@ -12,18 +12,7 @@ const ZOOM_LEVEL_MARGIN = 5;
 
 const AREA_THRESHOLD = 1200; //in square miles
 
-const flyToBbox = (bbox) => {
-  if (!bbox || !map) return;
-  const fitbox = [
-    [bbox[0], bbox[1]],
-    [bbox[2], bbox[3]],
-  ];
-  map.fitBounds(fitbox, {
-    offset: [60, 20], //offset in pixels to compensate for the dialog in the top left corner
-    padding: 20, // Add 20 pixels of padding around the bounding box
-    duration: 2000, // Animate the transition over 2 seconds
-  });
-};
+
 
 function filterCountriesByArea(data, threshold, op = 'gt') {
   if (!data) if (!data.length) return {};
@@ -71,25 +60,37 @@ export function DeckLayers({
         setShowCircle(true);
         handleZoomOutEvent(zoom);
       }
-      setZoomLevel(zoom)
+      setZoomLevel(zoom);
     };
 
     map.on('zoomend', handleViewportChange);
     map.on('dragend', handleViewportChange);
-    // map.on('moveend', handleViewportChange);
 
     return () => {
       map.off('zoomend', handleViewportChange);
       map.off('dragend', handleViewportChange);
-      // map.on('moveend', handleViewportChange);
     };
   }, [map]);
 
+  const flyToBbox = (bbox) => {
+    if (!bbox || !map) return;
+    const fitbox = [
+      [bbox[0], bbox[1]],
+      [bbox[2], bbox[3]],
+    ];
+    map.fitBounds(fitbox, {
+      offset: [60, 20], //offset in pixels to compensate for the dialog in the top left corner
+      padding: 20, // Add 20 pixels of padding around the bounding box
+      duration: 2000, // Animate the transition over 2 seconds
+    });
+  };
+
   const handleOnClick = useCallback((bbox) => {
+    setZoomLocation([]); // Clear locked location to prevent MapZoom from snapping back
     setShowCircle(false);
     setShowBoundaries(false);
     flyToBbox(bbox);
-  }, []);
+  }, [map, setZoomLocation]);
 
   const handleOnHover = (name) => {
     const countryName = countryMapping[name]
